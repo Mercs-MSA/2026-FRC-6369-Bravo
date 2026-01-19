@@ -78,7 +78,8 @@ public class RobotContainer {
             new Vision(
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
                 });
 
 
@@ -99,7 +100,8 @@ public class RobotContainer {
             new Vision(
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
                 });
 
   
@@ -120,7 +122,8 @@ public class RobotContainer {
             new Vision(
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
                 });
 
      
