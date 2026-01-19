@@ -1,0 +1,66 @@
+package frc.robot.subsystems.pivot;
+
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import frc.robot.Constants;
+
+public class PivotConstants {
+
+  public static final double kGearRatio = 100.0; // rotations motor per rotations pivot
+
+  public static final double kRotorRotationsToDegrees = 360.0 / kGearRatio;
+
+  public static final double kMaxPositionRad = 0.7;
+  public static final double kMinPositionRad = -0.1;
+  public static final double kPositionToleranceRad = 0.05;
+
+  public static final double kStatusSignalUpdateFrequencyHz = 100.0;
+  public static final int kLinearFilterSampleCount = 5;
+
+  public static final int kAmpFilterThreshold = 40;
+  public static final boolean kHomeWithCurrent = true;
+
+  public record PivotHardware(
+      int motorIDLeft, int motorIDRight, double gearRatio, double rotorRotationsToDegrees) {}
+
+  public record PivotGains(
+      double p,
+      double i,
+      double d,
+      double s,
+      double g,
+      double v,
+      double a,
+      double maxVelocityDegPerSec,
+      double maxAccelerationDegPerSec2,
+      double maxJerkDegPerSec3) {}
+
+  public record PivotMotorConfiguration(
+      boolean invert,
+      boolean enableStatorCurrentLimit,
+      boolean enableSupplyCurrentLimit,
+      double statorCurrentLimitAmps,
+      double supplyCurrentLimitAmps,
+      double peakForwardVoltage,
+      double peakReverseVoltage,
+      NeutralModeValue neutralMode) {}
+
+  public static final PivotHardware kPivotHardware =
+      new PivotHardware(
+          20, // left motor CAN ID
+          21, // right motor CAN ID
+          kGearRatio,
+          kRotorRotationsToDegrees);
+
+  public static final PivotGains kPivotGains =
+      switch (Constants.currentMode) {
+        case REAL -> new PivotGains(12.0, 0.0, 0.4, 0.2, 0.6, 1.3, 0.05, 120.0, 240.0, 0);
+
+        case SIM -> new PivotGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
+
+        default -> new PivotGains(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      };
+
+  public static final PivotMotorConfiguration kMotorConfiguration =
+      new PivotMotorConfiguration(
+          true, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+}

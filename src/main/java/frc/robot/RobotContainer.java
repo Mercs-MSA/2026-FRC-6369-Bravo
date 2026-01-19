@@ -15,9 +15,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,9 +22,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.generated.TunerConstants;
+import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
 import frc.robot.subsystems.drive.Drive.Drive;
 import frc.robot.subsystems.drive.Drive.Drive.DriveState;
+import frc.robot.subsystems.flywheel.Flywheel;
+import frc.robot.subsystems.flywheel.FlywheelConstants;
+import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.pivot.PivotConstants;
+import frc.robot.subsystems.pivot.PivotIOTalonFX;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretConstants;
+import frc.robot.subsystems.turret.TurretIOTalonFX;
 import frc.robot.subsystems.drive.Drive.GyroIO;
 import frc.robot.subsystems.drive.Drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.Drive.ModuleIO;
@@ -48,10 +55,18 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // controllers
   public final HolonomicController driveToPoseController = new HolonomicController();
+  
+  // Math
+  public final ShooterMathProvider shooterMath = new ShooterMathProvider();
+
   // Subsystems
+
   public final Drive drive;
   public final Vision vision;
 
+  public final Flywheel shooterFlywheels;
+  public final Pivot shooterHood;
+  public final Turret shooterTurret;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -82,6 +97,19 @@ public class RobotContainer {
                   new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
                 });
 
+        // Shooter
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                );
+
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive);
+
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
 
         break;
 
@@ -104,7 +132,20 @@ public class RobotContainer {
                   new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
                 });
 
-  
+        // Shooter
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                );
+
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive);
+
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
+
         break;
 
       default:
@@ -127,6 +168,20 @@ public class RobotContainer {
                 });
 
      
+        // Shooter
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                );
+
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive);
+
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
+
         break;
     }
 
