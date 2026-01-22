@@ -16,6 +16,8 @@ public interface TurretIO {
   public void updateInputs(TurretIOInputs inputs);
 
   public void setVoltage(double volts);
+  
+  public void setVoltageFlywheel(double volts);
 
   public void setPosition(double positionDegrees);
 
@@ -36,9 +38,16 @@ public interface TurretIO {
    * @param g Gravity term
    * @param a Acceleration
    */
-  public void setGains(double p, double i, double d, double v, double s, double g, double a);
+  public void setGainsTurret(double p, double i, double d, double v, double s, double g, double a);
+    
+  public void setGainsFlywheel(double p, double i, double d, double v, double s, double g, double a);
 
   public void setMotionMagicConstraints(double maxVelocity, double maxAcceleration);
 
+  public void setMotionMagicConstraintsFlywheel(double maxVelocity, double maxAcceleration);
+
   public void setBrakeMode(boolean brake);
+
+    public void setBrakeModeFlywheel(boolean brake);
+
 }

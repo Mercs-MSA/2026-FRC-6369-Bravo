@@ -26,12 +26,12 @@ import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
 import frc.robot.subsystems.drive.Drive.Drive;
 import frc.robot.subsystems.drive.Drive.Drive.DriveState;
-import frc.robot.subsystems.flywheel.Flywheel;
-import frc.robot.subsystems.flywheel.FlywheelConstants;
-import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+// import frc.robot.subsystems.flywheel.Flywheel;
+// import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.pivot.PivotIOTalonFX;
+// import frc.robot.subsystems.turret.FlywheelConstants;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIOTalonFX;
@@ -64,7 +64,7 @@ public class RobotContainer {
   public final Drive drive;
   public final Vision vision;
 
-  public final Flywheel shooterFlywheels;
+  // public final Flywheel shooterFlywheels;
   public final Pivot shooterHood;
   public final Turret shooterTurret;
 
@@ -98,10 +98,10 @@ public class RobotContainer {
                 });
 
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+        //         );
 
         shooterHood = 
                 new Pivot(
@@ -133,10 +133,10 @@ public class RobotContainer {
                 });
 
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+        //         );
 
         shooterHood = 
                 new Pivot(
@@ -169,10 +169,10 @@ public class RobotContainer {
 
      
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+        //         );
 
         shooterHood = 
                 new Pivot(
@@ -256,6 +256,11 @@ public class RobotContainer {
         .x()
         .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEPROFILED))
         .onFalse(drive.setDriveStateCommandContinued(DriveState.TELEOP));
+  
+    // driverController
+    //     .b()
+    //     .onTrue(shooterTurret.setVoltageFlywheel(12.0))
+    //     .onFalse(shooterTurret.setVoltageFlywheel(0.0));
 
     // driverController
     //     .a()

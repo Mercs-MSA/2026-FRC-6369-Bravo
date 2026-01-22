@@ -14,18 +14,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive.Drive;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.math.ShooterMathProvider;;
 
 public class Turret extends SubsystemBase {
 
   public enum TurretGoalState {
     HOME,
     FIXED,
-    POSE,
+    PROVIDED,
+  }
+  public enum FlywheelState {
+    STOP,
+    PROVIDED
   }
 
   public TurretGoalState currentState = TurretGoalState.HOME;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
+  private final ShooterMathProvider shooterMathProvider = new ShooterMathProvider();
 
   private Pose2d goalPose = null;
   private double goalRadians = 0.0;
@@ -44,18 +50,32 @@ public class Turret extends SubsystemBase {
     driveRotationOffset = 0.0;
     previousDriveRotation = drive.getPose().getRotation().getRadians();
 
-    io.setGains(
+    io.setGainsTurret(
         TurretConstants.kTurretGains.p(),
         TurretConstants.kTurretGains.i(),
         TurretConstants.kTurretGains.d(),
         TurretConstants.kTurretGains.s(),
         TurretConstants.kTurretGains.g(),
         TurretConstants.kTurretGains.v(),
-        TurretConstants.kTurretGains.a());
-
-    io.setMotionMagicConstraints(
+        TurretConstants.kTurretGains.a()
+        );
+   io.setGainsFlywheel(
+        TurretConstants.kFlywheelGains.p(),
+        TurretConstants.kFlywheelGains.i(),
+        TurretConstants.kFlywheelGains.d(),
+        TurretConstants.kFlywheelGains.s(),
+        TurretConstants.kFlywheelGains.g(),
+        TurretConstants.kFlywheelGains.v(),
+        TurretConstants.kFlywheelGains.a()
+        );
+    io.setMotionMagicConstraintsFlywheel(
+        TurretConstants.kFlywheelGains.maxVelocityDegPerSec(),
+        TurretConstants.kFlywheelGains.maxAccelerationDegPerSec2()
+        );
+      io.setMotionMagicConstraints(
         TurretConstants.kTurretGains.maxVelocityDegPerSec(),
-        TurretConstants.kTurretGains.maxAccelerationDegPerSec2());
+        TurretConstants.kTurretGains.maxAccelerationDegPerSec2()
+        );
 
   }
 
@@ -109,10 +129,10 @@ public class Turret extends SubsystemBase {
     this.currentState = TurretGoalState.FIXED;
   }
 
-  public void setGoalPose(Pose2d pose) {
-    this.goalPose = pose;
-    this.currentState = TurretGoalState.POSE;
-  }
+  // public void setGoalPose(Pose2d pose) {
+  //   this.goalPose = pose;
+  //   this.currentState = TurretGoalState.POSE;
+  // }
 
   @AutoLogOutput(key = "Turret/TargetIndicator")
   public Pose2d getTargetIndicator() {
@@ -141,6 +161,9 @@ public class Turret extends SubsystemBase {
   public void setPivotState(TurretGoalState state) {
     this.currentState = state;
   }
+  public void setVoltageFlywheel(double volts) {
+    io.setVoltageFlywheel(volts);
+  }
 
   @AutoLogOutput(key = "Turret/AtGoal")
   public boolean atGoal() {
@@ -156,4 +179,14 @@ public class Turret extends SubsystemBase {
   public double getGoalRadians() {
     return goalRadians;
   }
+
+    // @AutoLogOutput(key = "Flywheel/AtSpeed")
+  // public boolean atSpeed() {
+  //   double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
+  //   return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);
+  // }
+
+  // @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")
+  // public double getGoalSpeedRPS() {
+  //   return goalSpeedRPS;}
 }

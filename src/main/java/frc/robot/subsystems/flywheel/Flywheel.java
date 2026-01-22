@@ -1,76 +1,76 @@
-package frc.robot.subsystems.flywheel;
+// package frc.robot.subsystems.flywheel;
 
-import edu.wpi.first.math.filter.Debouncer;
-import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
+// import edu.wpi.first.math.filter.Debouncer;
+// import edu.wpi.first.math.filter.Debouncer.DebounceType;
+// import edu.wpi.first.math.filter.LinearFilter;
+// import edu.wpi.first.wpilibj.DriverStation;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import org.littletonrobotics.junction.AutoLogOutput;
+// import org.littletonrobotics.junction.Logger;
 
-public class Flywheel extends SubsystemBase {
-  public enum FlywheelState {
-    STOP,
-    PROVIDED
-  }
+// public class Flywheel extends SubsystemBase {
+//   public enum FlywheelState {
+//     STOP,
+//     PROVIDED
+//   }
 
-  private FlywheelState currentState = FlywheelState.STOP;
+//   private FlywheelState currentState = FlywheelState.STOP;
 
-  private final FlywheelIO io;
-  private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+//   private final FlywheelIO io;
+//   private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
 
-  private double goalSpeedRPS = 0.0;
+//   private double goalSpeedRPS = 0.0;
 
-  private final LinearFilter velocityFilter = LinearFilter.movingAverage(5);
-  private final Debouncer atSpeedDebouncer = new Debouncer(0.1, DebounceType.kRising);
+//   private final LinearFilter velocityFilter = LinearFilter.movingAverage(5);
+//   private final Debouncer atSpeedDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
-  public Flywheel(FlywheelIO io) {
-    this.io = io;
-  }
+//   public Flywheel(FlywheelIO io) {
+//     this.io = io;
+//   }
 
-  @Override
-  public void periodic() {
-    io.updateInputs(inputs);
-    Logger.processInputs("Flywheel/Inputs", inputs);
+//   @Override
+//   public void periodic() {
+//     io.updateInputs(inputs);
+//     Logger.processInputs("Flywheel/Inputs", inputs);
 
-    if (DriverStation.isDisabled()) {
-      stop();
-      return;
-    }
+//     if (DriverStation.isDisabled()) {
+//       stop();
+//       return;
+//     }
 
-    if (currentState == null) {
-      io.stop();
-      return;
-    }
+//     if (currentState == null) {
+//       io.stop();
+//       return;
+//     }
 
-    if (currentState == FlywheelState.STOP) {
-      goalSpeedRPS = 0.0;
-    }
+//     if (currentState == FlywheelState.STOP) {
+//       goalSpeedRPS = 0.0;
+//     }
 
-    io.setVelocity(goalSpeedRPS);
-  }
+//     io.setVelocity(goalSpeedRPS);
+//   }
 
-  public void setFlywheelState(FlywheelState state) {
-    this.currentState = state;
-  }
+//   public void setFlywheelState(FlywheelState state) {
+//     this.currentState = state;
+//   }
 
-  public void setCustomSpeedRPS(double speedRPS) {
-    goalSpeedRPS = speedRPS;
-    currentState = FlywheelState.PROVIDED;
-  }
+//   public void setCustomSpeedRPS(double speedRPS) {
+//     goalSpeedRPS = speedRPS;
+//     currentState = FlywheelState.PROVIDED;
+//   }
 
-  public void stop() {
-    io.stop();
-  }
+//   public void stop() {
+//     io.stop();
+//   }
 
-  @AutoLogOutput(key = "Flywheel/AtSpeed")
-  public boolean atSpeed() {
-    double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
-    return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);
-  }
+//   @AutoLogOutput(key = "Flywheel/AtSpeed")
+//   public boolean atSpeed() {
+//     double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
+//     return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);
+//   }
 
-  @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")
-  public double getGoalSpeedRPS() {
-    return goalSpeedRPS;
-  }
-}
+//   @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")
+//   public double getGoalSpeedRPS() {
+//     return goalSpeedRPS;
+//   }
+// }

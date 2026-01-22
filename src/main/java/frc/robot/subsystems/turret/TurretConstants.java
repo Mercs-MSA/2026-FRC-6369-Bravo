@@ -6,6 +6,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.robot.Constants;
 
 public class TurretConstants {
+   
+    public static final double kMotorRotationsToFlywheelRotations = 100.0;
+  public static final int kLinearFilterSampleCount = 5;
 
   public static final double kGearRatio = 100.0; // rotations motor per rotations pivot
 
@@ -25,7 +28,7 @@ public class TurretConstants {
   public static final double kLimelightTagTA = 8.0;
 
   public record TurretHardware(
-      int motorIDLeft, int cancoderID, double gearRatio, double rotorRotationsToDegrees) {}
+      int motorIDLeft, int motorIDFlywheel,int cancoderID, double gearRatio, double rotorRotationsToDegrees, double motorRotationsToFlywheelRotations) {}
 
   public record TurretGains(
       double p,
@@ -48,13 +51,36 @@ public class TurretConstants {
       double peakForwardVoltage,
       double peakReverseVoltage,
       NeutralModeValue neutralMode) {}
+    public record FlywheelGains(
+      double p,
+      double i,
+      double d,
+      double s,
+      double g,
+      double v,
+      double a,
+      double maxVelocityDegPerSec,
+      double maxAccelerationDegPerSec2,
+      double maxJerkDegPerSec3) {}
+
+  public record FlywheelMotorConfiguration(
+      boolean invert,
+      boolean enableStatorCurrentLimit,
+      boolean enableSupplyCurrentLimit,
+      double statorCurrentLimitAmps,
+      double supplyCurrentLimitAmps,
+      double peakForwardVoltage,
+      double peakReverseVoltage,
+      NeutralModeValue neutralMode) {}
 
   public static final TurretHardware kTurretHardware =
       new TurretHardware(
-          22, // motor CAN ID
+          22,
+          33, // motor CAN ID
           23, // cancoder CAN ID
           kGearRatio,
-          kRotorRotationsToDegrees);
+          kRotorRotationsToDegrees,
+          kMotorRotationsToFlywheelRotations);
 
   public static final TurretGains kTurretGains =
       switch (Constants.currentMode) {
@@ -64,8 +90,25 @@ public class TurretConstants {
 
         default -> new TurretGains(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       };
+  
+      public static final FlywheelGains kFlywheelGains =
+      switch (Constants.currentMode) {
+        case REAL -> new FlywheelGains(12.0, 0.0, 0.4, 0.2, 0.6, 1.3, 0.05, 120.0, 240.0, 0);
+
+        case SIM -> new FlywheelGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
+
+        default -> new FlywheelGains(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      };
+
 
   public static final TurretMotorConfiguration kMotorConfiguration =
       new TurretMotorConfiguration(
           true, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+    public static final TurretConstants kInstance = new TurretConstants();
+      
+  public static final FlywheelMotorConfiguration kMotorConfigurationFlywheel =
+      new FlywheelMotorConfiguration(
+          true, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+    public static final TurretConstants kInstanceFlywheel = new TurretConstants();
+
 }

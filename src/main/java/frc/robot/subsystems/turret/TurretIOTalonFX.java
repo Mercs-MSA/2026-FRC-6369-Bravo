@@ -22,6 +22,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.subsystems.turret.TurretConstants.TurretGains;
 import frc.robot.subsystems.turret.TurretConstants.TurretHardware;
 import frc.robot.subsystems.turret.TurretConstants.TurretMotorConfiguration;
@@ -29,9 +30,12 @@ import frc.robot.subsystems.turret.TurretConstants.TurretMotorConfiguration;
 public class TurretIOTalonFX implements TurretIO {
 
   private final TalonFX motor;
+  private final TalonFX motorLeftFlywheel;
+  private final TalonFX motorRightFlywheel;
   private final CANcoder cancoder;
 
   private final TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
+  private final TalonFXConfiguration motorFlywheelConfiguration = new TalonFXConfiguration();
   private final CANcoderConfiguration cancoderConfiguration = new CANcoderConfiguration();
 
   private StatusSignal<Angle> positionRotations;
@@ -49,6 +53,13 @@ public class TurretIOTalonFX implements TurretIO {
       TurretHardware hardware, TurretMotorConfiguration configuration, TurretGains gains, double minRadians, double maxRadians) {
 
     motor = new TalonFX(hardware.motorIDLeft());
+    motorRightFlywheel = new TalonFX(hardware.motorIDFlywheel());
+    motorLeftFlywheel = new TalonFX(hardware.motorIDFlywheel());
+    
+    // motorLeftFlywheel.setControl(Follower.with(motorRightFlywheel));
+  
+
+    
     cancoder = new CANcoder(hardware.cancoderID());
 
     motorConfiguration.Slot0.kP = gains.p();
@@ -131,7 +142,7 @@ public class TurretIOTalonFX implements TurretIO {
 
   @Override
   public void setVoltage(double volts) {
-    motor.setControl(voltageControl.withOutput(volts));
+    motorLeftFlywheel.setControl(voltageControl.withOutput(volts));
   }
 
   @Override
@@ -160,7 +171,7 @@ public class TurretIOTalonFX implements TurretIO {
   }
 
   @Override
-  public void setGains(double p, double i, double d, double v, double s, double g, double a) {
+  public void setGainsTurret(double p, double i, double d, double v, double s, double g, double a) {
     var slot0 = new Slot0Configs();
     slot0.kP = p;
     slot0.kI = i;
@@ -170,6 +181,18 @@ public class TurretIOTalonFX implements TurretIO {
     slot0.kG = g;
 
     motor.getConfigurator().apply(slot0);
+  }
+  public void setGainsFlywheel(double p, double i, double d, double v, double s, double g, double a) {
+    var slot0 = new Slot0Configs();
+    slot0.kP = p;
+    slot0.kI = i;
+    slot0.kD = d;
+    slot0.kS = s;
+    slot0.kV = v;
+    slot0.kG = g;
+
+    motorRightFlywheel.getConfigurator().apply(slot0);
+    motorLeftFlywheel.getConfigurator().apply(slot0);
   }
 
   @Override
@@ -191,4 +214,26 @@ public class TurretIOTalonFX implements TurretIO {
   private double degreesToRotations(double degrees) {
     return degrees / TurretConstants.kRotorRotationsToDegrees;
   }
+
+  @Override
+  public void setVoltageFlywheel(double volts) {
+    motorLeftFlywheel.setControl(voltageControl.withOutput(volts));
+
+    // TODO Auto-generated method stub
+    //throw new UnsupportedOperationException("Unimplemented method 'setVoltageFlywheel'");
+  }
+
+
+  @Override
+  public void setMotionMagicConstraintsFlywheel(double maxVelocity, double maxAcceleration) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setMotionMagicConstraintsFlywheel'");
+  }
+
+  @Override
+  public void setBrakeModeFlywheel(boolean brake) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setBrakeModeFlywheel'");
+  }
+
 }
