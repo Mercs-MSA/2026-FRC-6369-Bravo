@@ -100,7 +100,8 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
         // Shooter
@@ -140,7 +141,8 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
         // Shooter
@@ -181,7 +183,8 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
      

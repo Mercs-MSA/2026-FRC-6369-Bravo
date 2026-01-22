@@ -15,10 +15,11 @@ public class VisionConstants {
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "limelight-right";
   public static String camera1Name = "limelight-left";
-  public static String camera2Name = "limelight-tower";
+  public static String camera2Name = "limelight-front";
+  public static String camera3Name = "limelight-back";
 
   // Basic filtering thresholds
-  public static double maxAmbiguity = 20; // FIXME: changed
+  public static double maxAmbiguity = 20;
   public static double maxZError = 999; // changed
 
   // Standard deviation baselines, for 1 meter distance and 1 tag
