@@ -44,6 +44,11 @@ import frc.robot.subsystems.vision.CameraIO;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOLimelight;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.intake.IntakeConstants;
+import frc.robot.subsystems.intake.IntakeFlywheelIOTalonFX;
+import frc.robot.subsystems.intake.IntakeFlywheelConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -67,6 +72,7 @@ public class RobotContainer {
   public final Flywheel shooterFlywheels;
   public final Pivot shooterHood;
   public final Turret shooterTurret;
+  public final Intake intake;
 
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -111,6 +117,11 @@ public class RobotContainer {
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
 
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+
         break;
 
       case SIM:
@@ -145,6 +156,12 @@ public class RobotContainer {
         shooterTurret =
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
+
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        
 
         break;
 
@@ -181,6 +198,11 @@ public class RobotContainer {
         shooterTurret =
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive);
+
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
         break;
     }
