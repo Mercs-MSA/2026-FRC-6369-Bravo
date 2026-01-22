@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Drive;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -49,7 +50,7 @@ public class Pivot extends SubsystemBase {
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   private PivotGoal currentGoal = null;
-  private double goalAngleDeg = 0.0;
+  private double goalAngleRad = 0.0;
 
   private final LinearFilter homingCurrentFilter =
       LinearFilter.movingAverage(PivotConstants.kLinearFilterSampleCount);
@@ -67,9 +68,14 @@ public class Pivot extends SubsystemBase {
   private final Drive drive;
   private Translation2d targetPoint = new Translation2d();
 
-  public Pivot(PivotIO io, Drive drive) {
+  private final ShooterMathProvider math;
+
+  public Pivot(PivotIO io, Drive drive, ShooterMathProvider math) {
     this.io = io;
     this.drive = drive;
+    this.math = math;
+
+    //Take  in math, assume the values in there are updated
 
     io.setGains(
         PivotConstants.kPivotGains.p(),
@@ -98,17 +104,21 @@ public class Pivot extends SubsystemBase {
 
     if (!isHoming && currentGoal != null) {
       if (currentState != PivotState.PROVIDED) {
-        goalAngleDeg = currentGoal.getGoalRadians();
+        goalAngleRad = currentGoal.getGoalRadians();
       }
+    
+    if (currentGoal == PivotGoal.PROVIDED) {
+      goalAngleRad = math.shooterHoodAngle;
+    }
 
       if (currentGoal != PivotGoal.STOW) {
-        setPositionRad(goalAngleDeg);
+        setPositionRad(goalAngleRad);
         hasStowed = false;
       } else {
         if (hasStowed) {
           io.setVoltage(0.0);
         } else {
-          setPositionRad(goalAngleDeg);
+          setPositionRad(goalAngleRad);
           hasStowed = stowDebouncer.calculate(atGoal());
         }
       }
@@ -127,7 +137,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setAngle(double angleDeg) {
-    goalAngleDeg = angleDeg;
+    goalAngleRad = angleDeg;
     currentState = PivotState.PROVIDED;
     setPositionRad(angleDeg);
   }
@@ -198,7 +208,7 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDegrees")
   public double getSimGoalDeg() {
-    return goalAngleDeg;
+    return goalAngleRad;
   }
 
   public void setPivotState(PivotState state) {
@@ -207,7 +217,7 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/AtGoal")
   public boolean atGoal() {
-    return Math.abs(goalAngleDeg - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
+    return Math.abs(goalAngleRad - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
   }
 
   @AutoLogOutput(key = "Pivot/AngleDeg")
@@ -217,6 +227,6 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDeg")
   public double getGoalDeg() {
-    return goalAngleDeg;
+    return goalAngleRad;
   }
 }
