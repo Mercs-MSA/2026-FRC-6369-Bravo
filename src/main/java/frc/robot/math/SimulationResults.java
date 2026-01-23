@@ -2,6 +2,8 @@ package frc.robot.math;
 
 // TODO: example data only
 public class SimulationResults {
+    public static int iterations = 4;
+
     public static double[] targets = {
         0.035,
         1.9566666667,

@@ -32,9 +32,10 @@ public class ShooterMathProvider {
     }
 
     public void update(ChassisSpeeds velocities, Pose2d turretPose) {
-        double target = searchInput(2.5, sim.targets); // TODO: replace placeholder, meters from target
-        double tanVel = searchInput(0.1, sim.targets); // TODO: replace placeholder, m/s tangential
-        double radVel = searchInput(0.1, sim.targets); // TODO: replace placeolder, m/s radial
+        int target = searchInput(2.5, sim.targets); // TODO: replace placeholder, meters from target
+        int tanVel = searchInput(0.1, sim.targets); // TODO: replace placeholder, m/s tangential
+        int radVel = searchInput(0.1, sim.targets); // TODO: replace placeolder, m/s radial
+        int calculationIndex = target * 1 + tanVel * sim.iterations + radVel * (sim.iterations * sim.iterations);
 
         // TODO: implement
         System.out.printf("Update shooter sim: VelX: %f, VelY: %f, VelR: %f\n", velocities.vxMetersPerSecond, velocities.vyMetersPerSecond, velocities.omegaRadiansPerSecond);
