@@ -107,7 +107,7 @@ public class RobotContainer {
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 
@@ -148,7 +148,7 @@ public class RobotContainer {
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 
@@ -191,7 +191,7 @@ public class RobotContainer {
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 
