@@ -97,8 +97,10 @@ public class Turret extends SubsystemBase {
   }
 
   private Pose2d calculateTurretOffset(Pose2d drivePose) {
-    var r = Math.sin(TurretConstants.kTurretOffsetY);
-    return new Pose2d(drivePose.getX() + r * Math.cos(drivePose.getRotation().getRadians()), drivePose.getY() + r * Math.sin(drivePose.getRotation().getRadians()), drivePose.getRotation());
+    double r = drivePose.getRotation().getRadians();
+    double x = TurretConstants.kTurretOffsetX * Math.cos(r) - TurretConstants.kTurretOffsetY * Math.sin(r);
+    double y = TurretConstants.kTurretOffsetX * Math.sin(r) + TurretConstants.kTurretOffsetY * Math.cos(r);
+    return new Pose2d(drivePose.getX() + x, drivePose.getY() + y, drivePose.getRotation());
   }
 
   private double getTargettingAngle() {

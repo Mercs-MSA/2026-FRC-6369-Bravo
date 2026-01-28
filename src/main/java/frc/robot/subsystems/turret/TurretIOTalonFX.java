@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -136,12 +137,12 @@ public class TurretIOTalonFX implements TurretIO {
 
   @Override
   public void setPosition(double radians) {
-    motor.setControl(positionControl.withPosition(Units.radiansToRotations(radians % Math.PI)).withSlot(0));
+    motor.setControl(positionControl.withPosition(Units.radiansToRotations(MathUtil.clamp(MathUtil.angleModulus(radians - TurretConstants.kHomeRadians), TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit))).withSlot(0));
   }
 
   @Override
   public void setPositionMM(double radians) {
-    motor.setControl(positionControlMM.withPosition(Units.radiansToRotations(radians % Math.PI)).withSlot(0));
+    motor.setControl(positionControlMM.withPosition(Units.radiansToRotations(MathUtil.clamp(MathUtil.angleModulus(radians - TurretConstants.kHomeRadians), TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit))).withSlot(0));
   }
 
   @Override

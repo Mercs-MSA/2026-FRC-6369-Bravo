@@ -11,13 +11,14 @@ public class TurretConstants {
 
   public static final double kRotorRotationsToDegrees = 360.0 / kGearRatio;
 
-  public static final double kHomeRadians = 0.0;
+  public static final double kHomeRadians = 2.35619449;
   public static final double kToleranceRotations = 0.5;
 
   public static final double kMinRadiansLimit = -Math.PI;
   public static final double kMaxRadiansLimit = Math.PI;
 
-  public static final double kTurretOffsetY = 0.3;
+  public static final double kTurretOffsetX = -0.1354074;
+  public static final double kTurretOffsetY = 0.143215;
 
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
 

@@ -38,6 +38,6 @@ public class ShooterMathProvider {
         int calculationIndex = target * 1 + tanVel * sim.iterations + radVel * (sim.iterations * sim.iterations);
 
         // TODO: implement
-        System.out.printf("Update shooter sim: VelX: %f, VelY: %f, VelR: %f\n", velocities.vxMetersPerSecond, velocities.vyMetersPerSecond, velocities.omegaRadiansPerSecond);
+        // System.out.printf("Update shooter sim: VelX: %f, VelY: %f, VelR: %f\n", velocities.vxMetersPerSecond, velocities.vyMetersPerSecond, velocities.omegaRadiansPerSecond);
     }
 }
