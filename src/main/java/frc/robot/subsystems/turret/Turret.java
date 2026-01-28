@@ -2,8 +2,16 @@ package frc.robot.subsystems.turret;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableValue;
+import frc.robot.math.ShooterMathProvider;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Drive;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -13,7 +21,7 @@ public class Turret extends SubsystemBase {
   public enum TurretGoalState {
     HOME,
     FIXED,
-    POSE,
+    PROVIDED,
   }
 
   public TurretGoalState currentState = TurretGoalState.HOME;
@@ -27,10 +35,12 @@ public class Turret extends SubsystemBase {
   private double previousDriveRotation = 0.0;
 
   private final Drive drive;
+  private final ShooterMathProvider shooterMathProvider;
 
-  public Turret(TurretIO io, Drive drive) {
+  public Turret(TurretIO io, Drive drive, ShooterMathProvider shooterMathProvider) {
     this.io = io;
     this.drive = drive;
+    this.shooterMathProvider = shooterMathProvider;
 
     goalPose = new Pose2d();
     goalRadians = 0.0;
@@ -71,6 +81,16 @@ public class Turret extends SubsystemBase {
     }
     previousDriveRotation = drive.getPose().getRotation().getRadians();
 
+    // If we're in PROVIDED mode, ask the shooter math provider for the
+    // target point (world pose) and store it in goalPose so the targeting
+    // math below will use it.
+    if (currentState == TurretGoalState.PROVIDED) {
+      Translation2d provided = shooterMathProvider.targetPosition;
+      if (provided != null) {
+        this.goalPose = new Pose2d(provided, new edu.wpi.first.math.geometry.Rotation2d());
+      }
+    }
+
     io.setPosition(getTargettingAngle());
   }
 
@@ -87,6 +107,7 @@ public class Turret extends SubsystemBase {
     } else if (state == TurretGoalState.FIXED) {
       return goalRadians;
     } else {
+      
       Pose2d turretPose = calculateTurretOffset(drive.getPose()); 
       return Math.atan2(goalPose.getY() - turretPose.getY(), goalPose.getX() - turretPose.getX()) - (drive.getPose().getRotation().getRadians() + driveRotationOffset);
     }
@@ -104,7 +125,7 @@ public class Turret extends SubsystemBase {
 
   public void setGoalPose(Pose2d pose) {
     this.goalPose = pose;
-    this.currentState = TurretGoalState.POSE;
+    this.currentState = TurretGoalState.PROVIDED;
   }
 
   @AutoLogOutput(key = "Turret/TargetIndicator")
