@@ -100,13 +100,14 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 
@@ -140,13 +141,14 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 
@@ -181,14 +183,15 @@ public class RobotContainer {
                 new CameraIO[] {
                   new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
 
      
         // Shooter
         shooterFlywheels =
                 new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains)
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
                 );
 
         shooterHood = 

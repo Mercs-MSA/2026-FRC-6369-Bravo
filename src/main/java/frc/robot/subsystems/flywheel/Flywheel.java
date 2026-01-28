@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import frc.robot.math.ShooterMathProvider;
+import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 
 public class Flywheel extends SubsystemBase {
   public enum FlywheelState {
@@ -24,8 +26,11 @@ public class Flywheel extends SubsystemBase {
   private final LinearFilter velocityFilter = LinearFilter.movingAverage(5);
   private final Debouncer atSpeedDebouncer = new Debouncer(0.1, DebounceType.kRising);
 
-  public Flywheel(FlywheelIO io) {
+  private final ShooterMathProvider math;
+
+  public Flywheel(FlywheelIO io, ShooterMathProvider math) {
     this.io = io;
+    this.math = math;
   }
 
   @Override
@@ -41,6 +46,10 @@ public class Flywheel extends SubsystemBase {
     if (currentState == null) {
       io.stop();
       return;
+    }
+
+    if (currentState == FlywheelState.PROVIDED) {
+      goalSpeedRPS = math.shooterVelocityTarget;
     }
 
     if (currentState == FlywheelState.STOP) {
