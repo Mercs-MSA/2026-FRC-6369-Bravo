@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
     PROVIDED,
   }
 
-  public TurretGoalState currentState = TurretGoalState.HOME;
+  public TurretGoalState currentState = TurretGoalState.PROVIDED;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
@@ -33,6 +33,7 @@ public class Turret extends SubsystemBase {
 
   private double driveRotationOffset = 0.0;
   private double previousDriveRotation = 0.0;
+  private double goalRotationOffsetRadians = 0.0;
 
   private final Drive drive;
   private final ShooterMathProvider shooterMathProvider;
@@ -46,6 +47,7 @@ public class Turret extends SubsystemBase {
     goalRadians = 0.0;
     driveRotationOffset = 0.0;
     previousDriveRotation = drive.getPose().getRotation().getRadians();
+    goalRotationOffsetRadians = 0.0;
 
     io.setGains(
         TurretConstants.kTurretGains.p(),
@@ -85,10 +87,10 @@ public class Turret extends SubsystemBase {
     // target point (world pose) and store it in goalPose so the targeting
     // math below will use it.
     if (currentState == TurretGoalState.PROVIDED) {
-      Translation2d provided = shooterMathProvider.targetPosition;
-      if (provided != null) {
-        this.goalPose = new Pose2d(provided, new edu.wpi.first.math.geometry.Rotation2d());
-      }
+      goalPose = new Pose2d(shooterMathProvider.targetPosition, new Rotation2d());
+      goalRotationOffsetRadians = shooterMathProvider.shooterTurretDelta;
+    } else {
+      goalRotationOffsetRadians = 0.0;
     }
 
     io.setPosition(getTargettingAngle());
@@ -109,7 +111,7 @@ public class Turret extends SubsystemBase {
     } else {
       
       Pose2d turretPose = calculateTurretOffset(drive.getPose()); 
-      return Math.atan2(goalPose.getY() - turretPose.getY(), goalPose.getX() - turretPose.getX()) - (drive.getPose().getRotation().getRadians() + driveRotationOffset);
+      return Math.atan2(goalPose.getY() - turretPose.getY(), goalPose.getX() - turretPose.getX()) - (drive.getPose().getRotation().getRadians() + driveRotationOffset) + goalRotationOffsetRadians;
     }
   }
 

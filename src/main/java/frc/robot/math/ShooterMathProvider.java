@@ -12,7 +12,7 @@ public class ShooterMathProvider {
     public double shooterHoodAngle;
     public double shooterTurretDelta;
 
-    public static final Translation2d targetPosition = new Translation2d();
+    public static final Translation2d targetPosition = new Translation2d(4.640, 4.070);
 
     public static final SimulationResults sim = new SimulationResults();
 
