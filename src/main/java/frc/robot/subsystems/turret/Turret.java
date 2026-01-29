@@ -85,7 +85,7 @@ public class Turret extends SubsystemBase {
     // target point (world pose) and store it in goalPose so the targeting
     // math below will use it.
     if (currentState == TurretGoalState.PROVIDED) {
-      Translation2d provided = shooterMathProvider.targetPosition;
+      Translation2d provided = shooterMathProvider.targetPosition; //get actual target position
       if (provided != null) {
         this.goalPose = new Pose2d(provided, new edu.wpi.first.math.geometry.Rotation2d());
       }

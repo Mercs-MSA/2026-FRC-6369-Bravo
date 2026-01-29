@@ -15,6 +15,7 @@ public class ShooterMathProvider {
     public static final Translation2d targetPosition = new Translation2d();
 
     public static final SimulationResults sim = new SimulationResults();
+    //public Translation2d targetTurretLocation;
 
     // Modified from https://stackoverflow.com/a/30245398
     // Posted by David Soroko, modified by community. See post 'Timeline' for change history
@@ -31,13 +32,35 @@ public class ShooterMathProvider {
                 insertionPoint : insertionPoint - 1;
     }
 
-    public void update(ChassisSpeeds velocities, Pose2d turretPose) {
-        int target = searchInput(2.5, sim.targets); // TODO: replace placeholder, meters from target
-        int tanVel = searchInput(0.1, sim.targets); // TODO: replace placeholder, m/s tangential
-        int radVel = searchInput(0.1, sim.targets); // TODO: replace placeolder, m/s radial
+    public void update(ChassisSpeeds velocities, Pose2d turretPose) 
+    {  
+        double robotRadialVelocity=velocities.vxMetersPerSecond; //replace with radial velocity in relation to target
+        double robotTangentialVelocity=velocities.vyMetersPerSecond;//replace with tangential velocity in relation to target
+        double targetXDistance=targetPosition.getX()-turretPose.getX(); // TODO: calculate actual target location
+        int target = searchInput(targetXDistance, sim.targets); // TODO: replace placeholder, meters from target
+        int tanVel = searchInput(robotTangentialVelocity, sim.tanVelocities); // TODO: replace placeholder, m/s tangential
+        int radVel = searchInput(robotRadialVelocity, sim.radVelocities); // TODO: replace placeolder, m/s radial
         int calculationIndex = target * 1 + tanVel * sim.iterations + radVel * (sim.iterations * sim.iterations);
+        shooterVelocityTarget = sim.calculations[calculationIndex][2];
+        shooterHoodAngle = sim.calculations[calculationIndex][1];
+        shooterTurretDelta = sim.calculations[calculationIndex][0];
 
         // TODO: implement
         System.out.printf("Update shooter sim: VelX: %f, VelY: %f, VelR: %f\n", velocities.vxMetersPerSecond, velocities.vyMetersPerSecond, velocities.omegaRadiansPerSecond);
+    }
+    public double getShooterVelocityTarget(ChassisSpeeds velocities, Pose2d turretPose) 
+    {
+        update(velocities, turretPose);
+        return shooterVelocityTarget;
+    }
+    public double getShooterHoodAngle(ChassisSpeeds velocities, Pose2d turretPose) 
+    {
+        update(velocities, turretPose);
+        return shooterHoodAngle;
+    }
+    public double getShooterTurretDelta(ChassisSpeeds velocities, Pose2d turretPose) 
+    {
+        update(velocities, turretPose);
+        return shooterTurretDelta;
     }
 }
