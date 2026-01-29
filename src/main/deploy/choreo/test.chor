@@ -1,6 +1,6 @@
 {
- "name":"Test Auto",
- "version":1,
+ "name":"test",
+ "version":2,
  "type":"Swerve",
  "variables":{
   "expressions":{},
@@ -74,5 +74,11 @@
    "val":0.5588
   }
  },
- "generationFeatures":[]
+ "generationFeatures":[],
+ "codegen":{
+  "root":"..\\C:\\Users\\armaa\\Documents\\GitHub\\2026-FRC-6773\\src\\main\\deploy\\choreo",
+  "genVars":true,
+  "genTrajData":true,
+  "useChoreoLib":true
+ }
 }

@@ -15,6 +15,8 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -69,11 +71,10 @@ public class RobotContainer {
   public final Drive drive;
   public final Vision vision;
 
-  public final Flywheel shooterFlywheels;
-  public final Pivot shooterHood;
-  public final Turret shooterTurret;
-  public final Intake intake;
-
+  // public final Flywheel shooterFlywheels;
+  // public final Pivot shooterHood;
+  // public final Turret shooterTurret;
+  // public final Intake intake
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -105,23 +106,23 @@ public class RobotContainer {
                 });
 
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+        //         );
 
-        shooterHood = 
-                new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        // shooterHood = 
+        //         new Pivot(
+        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        shooterTurret =
-                new Turret(
-                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        // shooterTurret =
+        //         new Turret(
+        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        intake =
-                new Intake(
-                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        // intake =
+        //         new Intake(
+        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
         break;
 
@@ -146,23 +147,23 @@ public class RobotContainer {
                 });
 
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+        //         );
 
-        shooterHood = 
-                new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        // shooterHood = 
+        //         new Pivot(
+        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        shooterTurret =
-                new Turret(
-                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        // shooterTurret =
+        //         new Turret(
+        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        intake =
-                new Intake(
-                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        // intake =
+        //         new Intake(
+        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
         
 
         break;
@@ -189,23 +190,23 @@ public class RobotContainer {
 
      
         // Shooter
-        shooterFlywheels =
-                new Flywheel(
-                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-                );
+        // shooterFlywheels =
+        //         new Flywheel(
+        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+        //         );
 
-        shooterHood = 
-                new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        // shooterHood = 
+        //         new Pivot(
+        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        shooterTurret =
-                new Turret(
-                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        // shooterTurret =
+        //         new Turret(
+        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        intake =
-                new Intake(
-                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        // intake =
+        //         new Intake(
+        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
         break;
     }
@@ -307,15 +308,15 @@ public class RobotContainer {
     //     }, turret));
 
     // Reset gyro to 0° when B button is pressed
-    // driverController
-    //     .b()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //                 () ->
-    //                     drive.setPose(
-    //                         new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
-    //                 drive)
-    //             .ignoringDisable(true));
+    driverController
+        .b()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        drive.setPose(
+                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                    drive)
+                .ignoringDisable(true));
 
     driverController
         .leftBumper()
@@ -340,6 +341,11 @@ public class RobotContainer {
         "Choreo 1 Meter",
         new SequentialCommandGroup(
             autonCommands.resetToStartPose("1 Meter"), autonCommands.followChoreoPath("1 Meter")));
+            
+    autoChooser.addOption(
+        "Bump",
+        new SequentialCommandGroup(
+            autonCommands.resetToStartPose("Bump"), autonCommands.followChoreoPath("Bump")));
   }
 
   /**
