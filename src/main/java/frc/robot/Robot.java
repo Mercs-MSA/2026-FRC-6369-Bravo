@@ -28,6 +28,8 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import frc.robot.util.BinaryFileLoader;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -39,9 +41,15 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
   private Command mTeleopCommand;
+  private double time_stamp;
+  private static Timer timer = new Timer();
 
   public Robot() {
-    // Record metadata
+    time_stamp = timer.getFPGATimestamp();
+    //BinaryFileLoader.writeBinaryFile();
+    BinaryFileLoader.readBinaryFile(2);
+    System.out.println("elapsed time to read file was " + (timer.getFPGATimestamp() - time_stamp) + " seconds");
+
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
