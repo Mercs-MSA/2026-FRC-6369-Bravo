@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.math.SimulationResults;
+import frc.robot.subsystems.drive.Drive.Drive;
 
 public class ShooterMathProvider {
     public double shooterVelocityTarget;
@@ -32,12 +33,13 @@ public class ShooterMathProvider {
     }
 
     public void update(ChassisSpeeds velocities, Pose2d turretPose) {
-        int target = searchInput(2.5, sim.targets); // TODO: replace placeholder, meters from target
-        int tanVel = searchInput(0.1, sim.targets); // TODO: replace placeholder, m/s tangential
-        int radVel = searchInput(0.1, sim.targets); // TODO: replace placeolder, m/s radial
-        int calculationIndex = target * 1 + tanVel * sim.iterations + radVel * (sim.iterations * sim.iterations);
+        int target = searchInput(Math.sqrt(Math.pow(turretPose.getX() - targetPosition.getX(), 2) + Math.pow(turretPose.getY() - targetPosition.getY(), 2)), SimulationResults.targets); // TODO: replace placeholder, meters from target
+        int tanVel = searchInput(-1*velocities.vyMetersPerSecond, SimulationResults.targets); // TODO: replace placeholder, m/s tangential
+        int radVel = searchInput(-1*velocities.vxMetersPerSecond, SimulationResults.targets); // TODO: replace placeolder, m/s radial
+        int calculationIndex = target * 1 + tanVel * SimulationResults.iterations + radVel * (SimulationResults.iterations * SimulationResults.iterations);
 
         // TODO: implement
         // System.out.printf("Update shooter sim: VelX: %f, VelY: %f, VelR: %f\n", velocities.vxMetersPerSecond, velocities.vyMetersPerSecond, velocities.omegaRadiansPerSecond);
+        System.out.println(Arrays.toString(sim.calculations[calculationIndex]));
     }
 }

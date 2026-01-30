@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "BumpTesting"
+            "pathName": "StartToNeutralLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NeutralLeftPickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NeutralLeftPickupEnd"
           }
         }
       ]

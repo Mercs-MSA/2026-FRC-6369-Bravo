@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
@@ -283,6 +286,17 @@ public class RobotContainer {
         .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEPROFILED))
         .onFalse(drive.setDriveStateCommandContinued(DriveState.TELEOP));
 
+    SignalLogger.start(); // sysid
+    operatorController.a().whileTrue(
+        drive.sysIdQuasistatic(Direction.kForward));
+    operatorController.b().whileTrue(
+        drive.sysIdQuasistatic(Direction.kReverse));
+    operatorController.x().whileTrue(
+      drive.sysIdDynamic(Direction.kForward));
+    operatorController.y().whileTrue(
+      drive.sysIdDynamic(Direction.kReverse));
+
+
     // driverController
     //     .a()
     //     .onTrue(Commands.runOnce(() -> {
@@ -336,16 +350,6 @@ public class RobotContainer {
   // Choreo autos to be added to the auto chooser
   public void buildChoreoAutos(LoggedDashboardChooser<Command> autoChooser) {
     ChoreoAutonCommands autonCommands = new ChoreoAutonCommands(drive);
-
-    autoChooser.addOption(
-        "Choreo 1 Meter",
-        new SequentialCommandGroup(
-            autonCommands.resetToStartPose("1 Meter"), autonCommands.followChoreoPath("1 Meter")));
-            
-    autoChooser.addOption(
-        "Bump",
-        new SequentialCommandGroup(
-            autonCommands.resetToStartPose("Bump"), autonCommands.followChoreoPath("Bump")));
   }
 
   /**
