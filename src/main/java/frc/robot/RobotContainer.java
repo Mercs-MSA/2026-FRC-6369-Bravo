@@ -76,7 +76,7 @@ public class RobotContainer {
 
   // public final Flywheel shooterFlywheels;
   // public final Pivot shooterHood;
-  // public final Turret shooterTurret;
+  public final Turret shooterTurret;
   // public final Intake intake
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
@@ -118,9 +118,9 @@ public class RobotContainer {
         //         new Pivot(
         //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        // shooterTurret =
-        //         new Turret(
-        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
         // intake =
         //         new Intake(
@@ -159,9 +159,9 @@ public class RobotContainer {
         //         new Pivot(
         //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        // shooterTurret =
-        //         new Turret(
-        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
         // intake =
         //         new Intake(
@@ -202,9 +202,9 @@ public class RobotContainer {
         //         new Pivot(
         //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
 
-        // shooterTurret =
-        //         new Turret(
-        //           new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
+        shooterTurret =
+                new Turret(
+                  new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
         // intake =
         //         new Intake(
