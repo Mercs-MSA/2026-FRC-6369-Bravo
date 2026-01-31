@@ -1,5 +1,6 @@
 package frc.robot.math;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -23,7 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.SimulationResults;
-import frc.robot.subsystems.drive.Drive.Drive;
+import frc.robot.util.BinaryLoader;
 
 public class ShooterMathProvider {
     @AutoLogOutput
@@ -41,6 +42,7 @@ public class ShooterMathProvider {
     public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);
 
     public static final SimulationResults sim = new SimulationResults();
+    public static final BinaryLoader loader = new BinaryLoader();
 
     // private final LinearSystem linearSystem = LinearSystemId.createDrivetrainVelocitySystem(DCMotor.getKrakenX60Foc(1), robotMassKg, TunerConstants.FrontLeft.WheelRadius, TunerConstants.FrontLeft.LocationX, robotMOI, TunerConstants.FrontLeft.DriveMotorGearRatio);
 
@@ -72,6 +74,9 @@ public class ShooterMathProvider {
     }
 
     private static double lerp(double x, double x1, double x2, double q00, double q01) {
+        if (x == x2 || x == x1) {
+            return x;
+        }
         return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
     }
 
@@ -86,7 +91,7 @@ public class ShooterMathProvider {
         return lerp(z, z1, z2, r0, r1);
     }
 
-    public void update(ChassisSpeeds velocities, Pose2d turretPose) {
+    public void update(ChassisSpeeds velocities, Pose2d turretPose) throws IOException {
         var ta = Utils.getCurrentTimeSeconds();
 
         Translation2d target = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? FlippingUtil.flipFieldPose(new Pose2d(targetPositionBlueSide, new Rotation2d())).getTranslation() : targetPositionBlueSide;
@@ -99,14 +104,14 @@ public class ShooterMathProvider {
         int[] tanVelExtremesIndex = searchInput(tanVel, SimulationResults.tanVelocities);
         int[] radVelExtremesIndex = searchInput(radVel, SimulationResults.radVelocities);
 
-        var calculation_q000 = sim.calculations[getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0])];
-        var calculation_q001 = sim.calculations[getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[1])];
-        var calculation_q010 = sim.calculations[getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[0])];
-        var calculation_q011 = sim.calculations[getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[1])];
-        var calculation_q100 = sim.calculations[getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[0])];
-        var calculation_q101 = sim.calculations[getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[1])];
-        var calculation_q110 = sim.calculations[getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[0])];
-        var calculation_q111 = sim.calculations[getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[1])];
+        var calculation_q000 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]));
+        var calculation_q001 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[1]));
+        var calculation_q010 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[0]));
+        var calculation_q011 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[1]));
+        var calculation_q100 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[0]));
+        var calculation_q101 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[1]));
+        var calculation_q110 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[0]));
+        var calculation_q111 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[1]));
 
         shooterVelocityTarget = triLerp(
             radVel,
@@ -165,7 +170,6 @@ public class ShooterMathProvider {
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
         ); 
-        // System.out.println(Arrays.toString(sim.calculations[calculationIndex]));
 
         var tb = Utils.getCurrentTimeSeconds();
 
