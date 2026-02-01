@@ -5,7 +5,7 @@ import java.io.*;
 public class BinaryLoader {
 
 
-    private static final String FILE_PATH = "src\\main\\deploy\\ShooterCalculations.bin";
+    private static final String FILE_PATH = "/home/lvuser/deploy/ShooterCalculations.bin";
    
     // Define record structure: double (4 bytes) + double (4 bytes) + double (4 bytes) = 12 bytes per record
     private static final int RECORD_SIZE = 12;

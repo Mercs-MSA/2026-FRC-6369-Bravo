@@ -98,7 +98,7 @@ public class ShooterMathProvider {
 
         var dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
         var tanVel = velocities.vyMetersPerSecond;
-        var radVel = -1*velocities.vxMetersPerSecond;
+        var radVel = velocities.vxMetersPerSecond;
 
         int[] targetExtremesIndex = searchInput(dist, SimulationResults.targets);
         int[] tanVelExtremesIndex = searchInput(tanVel, SimulationResults.tanVelocities);

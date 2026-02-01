@@ -261,6 +261,7 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
+
     drive.setDefaultCommand(
         Commands.run(
             () ->
@@ -275,6 +276,22 @@ public class RobotContainer {
                             driverController.getLeftX()),
                     () -> -driverController.getRightX()),
             drive));
+
+    driverController.pov(0).whileTrue(
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+    );
+
+    driverController.pov(90).whileTrue(
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->-0.6, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+    );
+
+    driverController.pov(270).whileTrue(
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->0.6, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+    );
+    
+    driverController.pov(180).whileTrue(
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->-0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+    );
 
     driverController
         .y()
