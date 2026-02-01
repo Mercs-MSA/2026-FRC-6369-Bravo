@@ -1,12 +1,10 @@
 package frc.robot.util;
 import java.io.*;
 
+import com.ctre.phoenix6.Utils;
+
 
 public class BinaryLoader {
-
-
-    private static final String FILE_PATH = "/home/lvuser/deploy/ShooterCalculations.bin";
-   
     // Define record structure: double (4 bytes) + double (4 bytes) + double (4 bytes) = 12 bytes per record
     private static final int RECORD_SIZE = 12;
 
@@ -16,7 +14,7 @@ public class BinaryLoader {
     public BinaryLoader() {
         try {
             // use 'r' mode for read-only access
-            raf = new RandomAccessFile(FILE_PATH, "r");
+            raf = new RandomAccessFile(Utils.isSimulation() ? "src/main/deploy/ShooterCalculations.bin" : "/home/lvuser/deploy/ShooterCalculations.bin", "r");
         } catch (IOException e) {
             e.printStackTrace();
         }

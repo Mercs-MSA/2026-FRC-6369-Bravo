@@ -36,12 +36,18 @@ public class ShooterMathProvider {
     @AutoLogOutput
     public double runTime;
 
+    // inputs for Kalman filtering
     public static final double robotMassKg = 12.67;
-    public static final double robotMOI = 2.000;
+    public static final double robotMOI = 2.000; // moment of inertia
 
+    // position of hub opening on blue side
     public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);
 
+    // indexing info returned from simulation generator.py
+    // https://github.com/Mercs-MSA/2026-FRC-6369-ShooterSimulation
     public static final SimulationResults sim = new SimulationResults();
+
+    // loader for bulk binary data produced by simulation
     public static final BinaryLoader loader = new BinaryLoader();
 
     // private final LinearSystem linearSystem = LinearSystemId.createDrivetrainVelocitySystem(DCMotor.getKrakenX60Foc(1), robotMassKg, TunerConstants.FrontLeft.WheelRadius, TunerConstants.FrontLeft.LocationX, robotMOI, TunerConstants.FrontLeft.DriveMotorGearRatio);
@@ -55,31 +61,81 @@ public class ShooterMathProvider {
     //     0.0
     // );
 
-    // Modified from https://stackoverflow.com/a/30245398
-    // Posted by David Soroko, modified by community. See post 'Timeline' for change history
-    // Retrieved 2026-01-22, License - CC BY-SA 4.0
+    /**
+     * Upper/lower bound search for a value in an array
+     * @param value Input value
+     * @param a Array to search
+     * @return Two index positions. First is the upper bound index, second the lower bound index. May return two identical values if the exact input is in the array.
+     */
     private static int[] searchInput(double value, double[] a) {
-        if (value <= a[0]) { return new int[]{0, 0}; }
-        if (value >= a[a.length - 1]) { return new int[]{a.length - 1, a.length - 1}; }
+        // Modified from https://stackoverflow.com/a/30245398
+        // Posted by David Soroko, modified by community. See post 'Timeline' for change history
+        // Retrieved 2026-01-22, License - CC BY-SA 4.0
 
-        int result = Arrays.binarySearch(a, value);
-        if (result >= 0) { return new int[]{result, result}; }
+        if (value <= a[0]) { return new int[]{0, 0}; } // value is first in array? - return the first position
+        if (value >= a[a.length - 1]) { return new int[]{a.length - 1, a.length - 1}; } // value is last in array? - return the last position
 
-        int insertionPoint = -result - 1;
-        return new int[]{insertionPoint, insertionPoint - 1};
+        int result = Arrays.binarySearch(a, value); // search the array for the value, returns (-(insertion point) - 1) is value not found
+        if (result >= 0) { return new int[]{result, result}; } // If value is found, return exact index
+
+        int insertionPoint = -result - 1; // get the insertion point
+        return new int[]{insertionPoint, insertionPoint - 1}; // upper/lower
     }
 
+    /**
+     * Get the flat index of results in the simulation records.
+     * @param radVel Index of the radial velocity. Must be a valid index in SimulationResults
+     * @param tanVel Index of the tangential velocity. Must be a valid index in SimulationResults
+     * @param target Index of the target distance. Must be a valid index in SimulationResults
+     * @return Position in the flat array. 
+     */
     private int getCalcIndex(int radVel, int tanVel, int target) {
         return radVel * 1 + tanVel * SimulationResults.iterations + target * (SimulationResults.iterations * SimulationResults.iterations);
     }
 
+    /**
+     * Linear interpolation
+     * @param x Input value
+     * @param x1 Lower bound of x
+     * @param x2 Upper bound of x
+     * @param q00 Value at x1
+     * @param q01 Value at x2
+     * @return Interpolated value at x
+     */
     private static double lerp(double x, double x1, double x2, double q00, double q01) {
-        if (x == x2 || x == x1) {
-            return x;
+        if (x1 == x2) {
+            return q00;
+        }
+        if (x == x1) {
+            return q00;
+        }
+        if (x == x2) {
+            return q01;
         }
         return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
     }
 
+    /**
+     * Trilinear interpolation
+     * @param x Input x value
+     * @param y Input y value
+     * @param z Input z value
+     * @param q000 Value at (x1, y1, z1)
+     * @param q001 Value at (x1, y1, z2)
+     * @param q010 Value at (x1, y2, z1)
+     * @param q011 Value at (x1, y2, z2)
+     * @param q100 Value at (x2, y1, z1)
+     * @param q101 Value at (x2, y1, z2)
+     * @param q110 Value at (x2, y2, z1)
+     * @param q111 Value at (x2, y2, z2)
+     * @param x1 Lower bound of x
+     * @param x2 Upper bound of x
+     * @param y1 Lower bound of y
+     * @param y2 Upper bound of y
+     * @param z1 Lower bound of z
+     * @param z2 Upper bound of z
+     * @return Interpolated value at (x, y, z)
+     */
     private static double triLerp(double x, double y, double z, float q000, float q001, float q010, float q011, float q100, float q101, float q110, float q111, double x1, double x2, double y1, double y2, double z1, double z2) {
         double x00 = lerp(x, x1, x2, q000, q100);
         double x10 = lerp(x, x1, x2, q010, q110);
@@ -92,18 +148,23 @@ public class ShooterMathProvider {
     }
 
     public void update(ChassisSpeeds velocities, Pose2d turretPose) throws IOException {
+        // start runtime stat
         var ta = Utils.getCurrentTimeSeconds();
 
+        // Distance to target
         Translation2d target = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? FlippingUtil.flipFieldPose(new Pose2d(targetPositionBlueSide, new Rotation2d())).getTranslation() : targetPositionBlueSide;
-
         var dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
+
+        // Drivebase velocities (equal to turret velocities)
         var tanVel = velocities.vyMetersPerSecond;
         var radVel = velocities.vxMetersPerSecond;
 
+        // Search for upper/lower bound indices
         int[] targetExtremesIndex = searchInput(dist, SimulationResults.targets);
         int[] tanVelExtremesIndex = searchInput(tanVel, SimulationResults.tanVelocities);
         int[] radVelExtremesIndex = searchInput(radVel, SimulationResults.radVelocities);
 
+        // Read points for interpolation
         var calculation_q000 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]));
         var calculation_q001 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[1]));
         var calculation_q010 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[0]));
@@ -113,6 +174,7 @@ public class ShooterMathProvider {
         var calculation_q110 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[0]));
         var calculation_q111 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[1]));
 
+        // Interpolate between points, velocity
         shooterVelocityTarget = triLerp(
             radVel,
             tanVel,
@@ -132,6 +194,7 @@ public class ShooterMathProvider {
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
         ); 
+        // Interpolate between points, hood angle
         shooterHoodAngle = triLerp(
             radVel,
             tanVel,
@@ -151,6 +214,7 @@ public class ShooterMathProvider {
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
         ); 
+        // Interpolate between points, turret delta
         shooterTurretDelta = triLerp(
             radVel,
             tanVel,
@@ -171,8 +235,8 @@ public class ShooterMathProvider {
             SimulationResults.targets[targetExtremesIndex[1]]
         ); 
 
+        // update runtime stat
         var tb = Utils.getCurrentTimeSeconds();
-
         runTime = tb-ta;
     }
 }
