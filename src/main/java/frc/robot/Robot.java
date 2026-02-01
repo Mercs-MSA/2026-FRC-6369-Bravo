@@ -13,12 +13,12 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 
-import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
@@ -28,8 +28,9 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import frc.robot.util.BinaryFileLoader;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -41,15 +42,18 @@ public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
   private Command mTeleopCommand;
-  private double time_stamp;
-  private static Timer timer = new Timer();
+  double prevXAccel = 0.0;
+  double prevYAccel = 0.0;
+  BuiltInAccelerometer accelerometer = new BuiltInAccelerometer();
+  LinearFilter xAccelFilter = LinearFilter.movingAverage(2);
+  LinearFilter yAccelFilter = LinearFilter.movingAverage(2);
+  private ShuffleboardTab tab = Shuffleboard.getTab("Bump Detection");
+  private GenericEntry xyJerkMagEntry =
+      tab.add("X Y Jerk Filtered", 0)
+         .getEntry();
+  
 
   public Robot() {
-    time_stamp = timer.getFPGATimestamp();
-    //BinaryFileLoader.writeBinaryFile();
-    BinaryFileLoader.readBinaryFile(2);
-    System.out.println("elapsed time to read file was " + (timer.getFPGATimestamp() - time_stamp) + " seconds");
-
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
     Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
@@ -126,6 +130,20 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    //Bump Detection test
+    // Apply 2 tap FIR filter to the accelerometer readings
+    double filteredXAccel = xAccelFilter.calculate(accelerometer.getX());
+    double filteredYAccel = yAccelFilter.calculate(accelerometer.getY());
+
+    // Calculates the jerk in the X and Y directions
+    // Divides by .02 because default loop timing is 20ms
+    double xJerk = (filteredXAccel - prevXAccel) / 0.02;
+    double yJerk = (filteredYAccel - prevYAccel) / 0.02;
+    prevXAccel = filteredXAccel;
+    prevYAccel = filteredYAccel;
+
+    xyJerkMagEntry.setDouble(Math.hypot(xJerk, yJerk));
 
     // Run our vision loop
     robotContainer.vision.periodic(robotContainer.drive);
