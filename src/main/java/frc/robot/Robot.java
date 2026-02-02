@@ -31,6 +31,8 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.ChassisSpeedsFilter;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -44,14 +46,15 @@ public class Robot extends LoggedRobot {
   private Command mTeleopCommand;
   double prevXAccel = 0.0;
   double prevYAccel = 0.0;
+  double[] filteredChassisSpeeds = new double[3];
   BuiltInAccelerometer accelerometer = new BuiltInAccelerometer();
   LinearFilter xAccelFilter = LinearFilter.movingAverage(2);
   LinearFilter yAccelFilter = LinearFilter.movingAverage(2);
+  ChassisSpeedsFilter m_chassisSpeedsFilter = new ChassisSpeedsFilter();
   private ShuffleboardTab tab = Shuffleboard.getTab("Bump Detection");
   private GenericEntry xyJerkMagEntry =
       tab.add("X Y Jerk Filtered", 0)
-         .getEntry();
-  
+         .getEntry();  
 
   public Robot() {
     Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
@@ -153,6 +156,8 @@ public class Robot extends LoggedRobot {
     
     // Run shooter calculations
     robotContainer.shooterMath.update(robotContainer.drive.getChassisSpeeds(), robotContainer.drive.getPose());
+    m_chassisSpeedsFilter.predictAndUpdate(robotContainer.drive.getChassisSpeeds().vxMetersPerSecond, robotContainer.drive.getChassisSpeeds().vyMetersPerSecond, robotContainer.drive.getChassisSpeeds().omegaRadiansPerSecond);
+    filteredChassisSpeeds = m_chassisSpeedsFilter.getState();
   }
 
   /** This function is called once when the robot is disabled. */
