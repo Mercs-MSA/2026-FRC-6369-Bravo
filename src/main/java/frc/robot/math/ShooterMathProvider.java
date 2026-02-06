@@ -50,17 +50,6 @@ public class ShooterMathProvider {
     // loader for bulk binary data produced by simulation
     public static final BinaryLoader loader = new BinaryLoader();
 
-    // private final LinearSystem linearSystem = LinearSystemId.createDrivetrainVelocitySystem(DCMotor.getKrakenX60Foc(1), robotMassKg, TunerConstants.FrontLeft.WheelRadius, TunerConstants.FrontLeft.LocationX, robotMOI, TunerConstants.FrontLeft.DriveMotorGearRatio);
-
-    // private final KalmanFilter<N1, N2, N2> velFilter = new KalmanFilter<>(
-    //     Nat.N2(),
-    //     Nat.N2(),
-    //     linearSystem.slice(0),
-    //     VecBuilder.fill(3.0),
-    //     VecBuilder.fill(0.01),
-    //     0.0
-    // );
-
     /**
      * Upper/lower bound search for a value in an array
      * @param value Input value
