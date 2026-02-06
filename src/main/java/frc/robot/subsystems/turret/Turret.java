@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
     PROVIDED,
   }
 
-  public TurretGoalState currentState = TurretGoalState.PROVIDED;
+  public TurretGoalState currentState = TurretGoalState.HOME;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
@@ -87,7 +87,7 @@ public class Turret extends SubsystemBase {
     // target point (world pose) and store it in goalPose so the targeting
     // math below will use it.
     if (currentState == TurretGoalState.PROVIDED) {
-      goalPose = new Pose2d(shooterMathProvider.targetPosition, new Rotation2d());
+      goalPose = new Pose2d(shooterMathProvider.targetPositionBlueSide, new Rotation2d());
       goalRotationOffsetRadians = shooterMathProvider.shooterTurretDelta;
     } else {
       goalRotationOffsetRadians = 0.0;

@@ -86,8 +86,10 @@ public class TurretIOTalonFX implements TurretIO {
             ? InvertedValue.CounterClockwise_Positive
             : InvertedValue.Clockwise_Positive;
 
-    motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearRatio();
+    motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+    motorConfiguration.Feedback.FeedbackRemoteSensorID = hardware.cancoderID();
+    motorConfiguration.Feedback.SensorToMechanismRatio = hardware.sensorMechanismGearRatio();
+    motorConfiguration.Feedback.RotorToSensorRatio = hardware.rotorSensorGearRatio();
 
     motor.getConfigurator().apply(motorConfiguration, 1.0);
 

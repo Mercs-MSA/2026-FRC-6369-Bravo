@@ -13,6 +13,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -181,6 +183,6 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   private double degreesToRotations(double degrees) {
-    return degrees / PivotConstants.kRotorRotationsToDegrees;
+    return Units.degreesToRotations(degrees);
   }
 }

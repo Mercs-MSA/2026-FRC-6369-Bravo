@@ -7,26 +7,24 @@ import frc.robot.Constants;
 
 public class TurretConstants {
 
-  public static final double kGearRatio = 100.0; // rotations motor per rotations pivot
+  public static final double kSensorMechanismRatio = 11.3333333333; // sensor to mechanism
+public static final double kRotorSensorGearRatio = 6.136; // rotor to sensor
 
-  public static final double kRotorRotationsToDegrees = 360.0 / kGearRatio;
+  public static final double kRotorRotationsToDegrees = 360.0 / kSensorMechanismRatio;
 
-  public static final double kHomeRadians = 2.35619449;
+  public static final double kHomeRadians = 0;
   public static final double kToleranceRotations = 0.5;
 
-  public static final double kMinRadiansLimit = -Math.PI;
-  public static final double kMaxRadiansLimit = Math.PI;
+  public static final double kMinRadiansLimit = -0.25;
+  public static final double kMaxRadiansLimit = 0.25;
 
   public static final double kTurretOffsetX = -0.1354074;
   public static final double kTurretOffsetY = 0.143215;
 
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
 
-  public static final double kLimelightTxP = 0.5;
-  public static final double kLimelightTagTA = 8.0;
-
   public record TurretHardware(
-      int motorIDLeft, int cancoderID, double gearRatio, double rotorRotationsToDegrees) {}
+      int motorIDLeft, int cancoderID, double sensorMechanismGearRatio, double rotorSensorGearRatio, double rotorRotationsToDegrees) {}
 
   public record TurretGains(
       double p,
@@ -52,14 +50,15 @@ public class TurretConstants {
 
   public static final TurretHardware kTurretHardware =
       new TurretHardware(
-          22, // motor CAN ID
-          23, // cancoder CAN ID
-          kGearRatio,
+          31, // motor CAN ID
+          30, // cancoder CAN ID
+          kSensorMechanismRatio,
+          kRotorSensorGearRatio,
           kRotorRotationsToDegrees);
 
   public static final TurretGains kTurretGains =
       switch (Constants.currentMode) {
-        case REAL -> new TurretGains(12.0, 0.0, 0.4, 0.2, 0.6, 1.3, 0.05, 120.0, 240.0, 0);
+        case REAL -> new TurretGains(0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00, 120.0, 240.0, 0);
 
         case SIM -> new TurretGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 

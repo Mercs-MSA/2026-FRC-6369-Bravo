@@ -22,6 +22,9 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+
+import java.io.IOException;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -126,7 +129,11 @@ public class Robot extends LoggedRobot {
     // Threads.setCurrentThreadPriority(false, 10);
     
     // Run shooter calculations
-    robotContainer.shooterMath.update(robotContainer.drive.getChassisSpeeds(), robotContainer.drive.getPose());
+    try {
+      robotContainer.shooterMath.update(robotContainer.drive.getChassisSpeeds(), robotContainer.drive.getPose());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   /** This function is called once when the robot is disabled. */
