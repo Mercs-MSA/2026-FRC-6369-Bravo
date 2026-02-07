@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
     PROVIDED,
   }
 
-  public TurretGoalState currentState = TurretGoalState.HOME;
+  public TurretGoalState currentState = TurretGoalState.PROVIDED;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
