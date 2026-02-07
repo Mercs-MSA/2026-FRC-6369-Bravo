@@ -22,7 +22,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 public class Pivot extends SubsystemBase {
 
   public enum PivotGoal {
-    STOW(() -> 0.0),
+    STOW(() -> 0.01),
     PROVIDED(() -> 0.0);
 
     private final DoubleSupplier goalDegrees;
@@ -43,36 +43,18 @@ public class Pivot extends SubsystemBase {
 
   public PivotState currentState = PivotState.STOW;
 
-  private double homingStartTime = 0.0;
-  private static final double kHomingTimeoutSec = 2.0;
-
   private final PivotIO io;
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   private PivotGoal currentGoal = null;
   private double goalAngleRad = 0.0;
 
-  private final LinearFilter homingCurrentFilter =
-      LinearFilter.movingAverage(PivotConstants.kLinearFilterSampleCount);
-
-  private final LoggedNetworkBoolean simHomeTrigger =
-      new LoggedNetworkBoolean("Pivot/SimHasHomed", false);
-
-  private boolean isHoming = false;
-  private boolean hasHomed = false;
-
-  private final Debouncer stowDebouncer = new Debouncer(0.05, DebounceType.kBoth);
-
-  private boolean hasStowed = false;
-
-  private final Drive drive;
   private Translation2d targetPoint = new Translation2d();
 
   private final ShooterMathProvider math;
 
-  public Pivot(PivotIO io, Drive drive, ShooterMathProvider math) {
+  public Pivot(PivotIO io, ShooterMathProvider math) {
     this.io = io;
-    this.drive = drive;
     this.math = math;
 
     //Take  in math, assume the values in there are updated
@@ -93,7 +75,6 @@ public class Pivot extends SubsystemBase {
 
   @Override
   public void periodic() {
-
     io.updateInputs(inputs);
     Logger.processInputs("Pivot/Inputs", inputs);
 
@@ -102,30 +83,15 @@ public class Pivot extends SubsystemBase {
       return;
     }
 
-    if (!isHoming && currentGoal != null) {
+    if (currentGoal != null) {
       if (currentState != PivotState.PROVIDED) {
         goalAngleRad = currentGoal.getGoalRadians();
-      }
-    
-    if (currentGoal == PivotGoal.PROVIDED) {
-      goalAngleRad = math.shooterHoodAngle;
-    }
-
-      if (currentGoal != PivotGoal.STOW) {
-        setPositionRad(goalAngleRad);
-        hasStowed = false;
       } else {
-        if (hasStowed) {
-          io.setVoltage(0.0);
-        } else {
-          setPositionRad(goalAngleRad);
-          hasStowed = stowDebouncer.calculate(atGoal());
-        }
+        goalAngleRad = math.shooterHoodAngle;
       }
-    } else if (isHoming) {
-      handleHoming();
     }
-  }
+    io.setPosition(goalAngleRad);
+}
 
   public void setGoal(PivotGoal goal) {
     this.currentGoal = goal;
@@ -152,46 +118,6 @@ public class Pivot extends SubsystemBase {
         MathUtil.clamp(
             angle, PivotConstants.kMinPositionRad, PivotConstants.kMaxPositionRad);
     io.setPositionMM(Units.radiansToRotations(angle));
-  }
-
-  public void home() {
-    isHoming = true;
-    hasHomed = false;
-    homingStartTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
-    setGoal(null);
-  }
-
-  private void handleHoming() {
-    double elapsed = edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - homingStartTime;
-    if (elapsed > kHomingTimeoutSec) {
-      io.stop();
-      isHoming = false;
-      hasHomed = false;
-      DriverStation.reportWarning("Pivot homing timed out", false);
-      return;
-    }
-
-    double avgCurrent = homingCurrentFilter.calculate(inputs.statorCurrentAmps);
-
-    if (RobotBase.isReal()) {
-      if (avgCurrent > PivotConstants.kAmpFilterThreshold) {
-        io.resetPosition();
-        stop();
-        isHoming = false;
-        hasHomed = true;
-      } else {
-        io.setVoltage(-2.0);
-      }
-    } else {
-      if (simHomeTrigger.get()) {
-        io.resetPosition();
-        stop();
-        isHoming = false;
-        hasHomed = true;
-      } else {
-        io.setVoltage(-2.0);
-      }
-    }
   }
 
   public void setPivotGoalWithState() {

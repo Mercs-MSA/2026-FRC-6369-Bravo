@@ -75,7 +75,7 @@ public class RobotContainer {
   public final Vision vision;
 
   // public final Flywheel shooterFlywheels;
-  // public final Pivot shooterHood;
+  public final Pivot shooterHood;
   public final Turret shooterTurret;
   // public final Intake intake
   // Controller
@@ -114,9 +114,9 @@ public class RobotContainer {
         //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
         //         );
 
-        // shooterHood = 
-        //         new Pivot(
-        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -155,9 +155,9 @@ public class RobotContainer {
         //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
         //         );
 
-        // shooterHood = 
-        //         new Pivot(
-        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -198,9 +198,9 @@ public class RobotContainer {
         //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
         //         );
 
-        // shooterHood = 
-        //         new Pivot(
-        //           new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), drive, shooterMath);
+        shooterHood = 
+                new Pivot(
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
 
         shooterTurret =
                 new Turret(

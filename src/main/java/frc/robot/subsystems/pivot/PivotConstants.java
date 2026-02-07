@@ -6,21 +6,16 @@ import frc.robot.Constants;
 public class PivotConstants {
 
   public static final double kGearRatio = 37.74545; // rotations motor per rotations pivot
+  public static final double kRotorOffset = 0.000488; // rotations, find in TunerX
 
-  public static final double kRotorRotationsToDegrees = 360.0 / kGearRatio;
-
-  public static final double kMaxPositionRad = 0.7;
-  public static final double kMinPositionRad = -0.1;
-  public static final double kPositionToleranceRad = 0.05;
+  public static final double kMaxPositionRad = 0.471;
+  public static final double kMinPositionRad = 0.0;
+  public static final double kPositionToleranceRad = 0.005;
 
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
-  public static final int kLinearFilterSampleCount = 5;
-
-  public static final int kAmpFilterThreshold = 40;
-  public static final boolean kHomeWithCurrent = true;
 
   public record PivotHardware(
-      int motorID, double gearRatio, double rotorRotationsToDegrees) {}
+      int motorID, double gearRatio, double rotorOffset) {}
 
   public record PivotGains(
       double p,
@@ -48,11 +43,12 @@ public class PivotConstants {
       new PivotHardware(
           7, // left motor CAN ID
           kGearRatio,
-          kRotorRotationsToDegrees);
+          kRotorOffset
+          );
 
   public static final PivotGains kPivotGains =
       switch (Constants.currentMode) {
-        case REAL -> new PivotGains(12.0, 0.0, 0.4, 0.2, 0.6, 1.3, 0.05, 120.0, 240.0, 0);
+        case REAL -> new PivotGains(50.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 120.0, 240.0, 0);
 
         case SIM -> new PivotGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 

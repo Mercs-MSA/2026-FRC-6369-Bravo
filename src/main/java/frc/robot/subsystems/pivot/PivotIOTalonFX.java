@@ -26,8 +26,7 @@ import frc.robot.subsystems.pivot.PivotConstants.PivotMotorConfiguration;
 
 public class PivotIOTalonFX implements PivotIO {
 
-  private final TalonFX motorLeft;
-  private final TalonFX motorRight;
+  private final TalonFX motor;
 
   private final TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
@@ -38,15 +37,13 @@ public class PivotIOTalonFX implements PivotIO {
   private StatusSignal<Current> statorCurrentAmpsLeft;
   private StatusSignal<Temperature> temperatureCelsiusLeft;
 
-  private final VoltageOut voltageControl = new VoltageOut(0.0);
   private final PositionVoltage positionControl = new PositionVoltage(0.0);
   private final MotionMagicVoltage positionControlMM = new MotionMagicVoltage(0);
 
   public PivotIOTalonFX(
       PivotHardware hardware, PivotMotorConfiguration configuration, PivotGains gains) {
 
-    motorLeft = new TalonFX(hardware.motorIDLeft());
-    motorRight = new TalonFX(hardware.motorIDRight());
+    motor = new TalonFX(hardware.motorID());
 
     motorConfiguration.Slot0.kP = gains.p();
     motorConfiguration.Slot0.kI = gains.i();
@@ -58,10 +55,10 @@ public class PivotIOTalonFX implements PivotIO {
 
     // Motion Magic values converted to rotations
     motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        degreesToRotations(gains.maxVelocityDegPerSec());
+        radiansToRotations(gains.maxVelocityDegPerSec());
     motorConfiguration.MotionMagic.MotionMagicAcceleration =
-        degreesToRotations(gains.maxAccelerationDegPerSec2());
-    motorConfiguration.MotionMagic.MotionMagicJerk = degreesToRotations(gains.maxJerkDegPerSec3());
+        radiansToRotations(gains.maxAccelerationDegPerSec2());
+    motorConfiguration.MotionMagic.MotionMagicJerk = radiansToRotations(gains.maxJerkDegPerSec3());
 
     motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable =
@@ -78,19 +75,18 @@ public class PivotIOTalonFX implements PivotIO {
 
     motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     motorConfiguration.Feedback.SensorToMechanismRatio = hardware.gearRatio();
+    motorConfiguration.Feedback.FeedbackRotorOffset = hardware.rotorOffset();
 
-    motorLeft.setPosition(0.0);
-    motorRight.setPosition(0.0);
+    motor.setPosition(0.0);
 
-    motorLeft.getConfigurator().apply(motorConfiguration, 1.0);
-    motorRight.getConfigurator().apply(motorConfiguration, 1.0);
+    motor.getConfigurator().apply(motorConfiguration, 1.0);
 
-    positionDegreesLeft = motorLeft.getPosition();
-    velocityDegreesPerSecLeft = motorLeft.getVelocity();
-    appliedVoltsLeft = motorLeft.getMotorVoltage();
-    supplyCurrentAmpsLeft = motorLeft.getSupplyCurrent();
-    statorCurrentAmpsLeft = motorLeft.getStatorCurrent();
-    temperatureCelsiusLeft = motorLeft.getDeviceTemp();
+    positionDegreesLeft = motor.getPosition();
+    velocityDegreesPerSecLeft = motor.getVelocity();
+    appliedVoltsLeft = motor.getMotorVoltage();
+    supplyCurrentAmpsLeft = motor.getSupplyCurrent();
+    statorCurrentAmpsLeft = motor.getStatorCurrent();
+    temperatureCelsiusLeft = motor.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         PivotConstants.kStatusSignalUpdateFrequencyHz,
@@ -101,11 +97,7 @@ public class PivotIOTalonFX implements PivotIO {
         statorCurrentAmpsLeft,
         temperatureCelsiusLeft);
 
-    motorLeft.optimizeBusUtilization(0.0, 1.0);
-    motorRight.optimizeBusUtilization(0.0, 1.0);
-
-    // Right motor follows left
-    motorRight.setControl(new Follower(hardware.motorIDLeft(), MotorAlignmentValue.Opposed));
+    motor.optimizeBusUtilization(0.0, 1.0);
   }
 
   @Override
@@ -129,28 +121,18 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   @Override
-  public void setVoltage(double volts) {
-    motorLeft.setControl(voltageControl.withOutput(volts));
-  }
-
-  @Override
   public void setPosition(double degrees) {
-    motorLeft.setControl(positionControl.withPosition(degreesToRotations(degrees)).withSlot(0));
+    motor.setControl(positionControl.withPosition(radiansToRotations(degrees)).withSlot(0));
   }
 
   @Override
   public void setPositionMM(double degrees) {
-    motorLeft.setControl(positionControlMM.withPosition(degreesToRotations(degrees)).withSlot(0));
+    motor.setControl(positionControlMM.withPosition(radiansToRotations(degrees)).withSlot(0));
   }
 
   @Override
   public void stop() {
-    motorLeft.stopMotor();
-  }
-
-  @Override
-  public void resetPosition() {
-    motorLeft.setPosition(0.0);
+    motor.stopMotor();
   }
 
   @Override
@@ -163,26 +145,26 @@ public class PivotIOTalonFX implements PivotIO {
     slot0.kV = v;
     slot0.kG = g;
 
-    motorLeft.getConfigurator().apply(slot0);
+    motor.getConfigurator().apply(slot0);
   }
 
   @Override
   public void setMotionMagicConstraints(
       double maxVelocityDegPerSec, double maxAccelerationDegPerSec2) {
     var motionMagic = motorConfiguration.MotionMagic;
-    motionMagic.MotionMagicCruiseVelocity = degreesToRotations(maxVelocityDegPerSec);
-    motionMagic.MotionMagicAcceleration = degreesToRotations(maxAccelerationDegPerSec2);
-    motionMagic.MotionMagicJerk = 10.0 * degreesToRotations(maxAccelerationDegPerSec2);
+    motionMagic.MotionMagicCruiseVelocity = radiansToRotations(maxVelocityDegPerSec);
+    motionMagic.MotionMagicAcceleration = radiansToRotations(maxAccelerationDegPerSec2);
+    motionMagic.MotionMagicJerk = 10.0 * radiansToRotations(maxAccelerationDegPerSec2);
 
-    motorLeft.getConfigurator().apply(motionMagic);
+    motor.getConfigurator().apply(motionMagic);
   }
 
   @Override
   public void setBrakeMode(boolean brake) {
-    motorLeft.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    motor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 
-  private double degreesToRotations(double degrees) {
-    return Units.degreesToRotations(degrees);
+  private double radiansToRotations(double radians) {
+    return Units.radiansToRotations(radians);
   }
 }

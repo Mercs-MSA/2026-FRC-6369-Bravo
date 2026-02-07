@@ -15,13 +15,9 @@ public interface PivotIO {
 
   public void updateInputs(PivotIOInputs inputs);
 
-  public void setVoltage(double volts);
-
   public void setPosition(double positionDegrees);
 
   public void setPositionMM(double positionDegrees);
-
-  public void resetPosition();
 
   public void stop();
 
