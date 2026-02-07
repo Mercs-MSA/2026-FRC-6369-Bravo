@@ -56,6 +56,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     motorConfiguration.Slot0.kV = gains.v();
     motorConfiguration.Slot0.kA = gains.a();
     motorConfiguration.Slot0.kG = gains.g();
+    motorConfiguration.Slot0.GravityType = IntakeConstants.gravityType;
     
     motorConfiguration.Feedback.FeedbackRemoteSensorID= canCoder.getDeviceID();
     motorConfiguration.Feedback.FeedbackSensorSource= FeedbackSensorSourceValue.FusedCANcoder;
