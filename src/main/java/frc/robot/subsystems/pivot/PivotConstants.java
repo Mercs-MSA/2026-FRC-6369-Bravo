@@ -5,7 +5,7 @@ import frc.robot.Constants;
 
 public class PivotConstants {
 
-  public static final double kGearRatio = 100.0; // rotations motor per rotations pivot
+  public static final double kGearRatio = 37.74545; // rotations motor per rotations pivot
 
   public static final double kRotorRotationsToDegrees = 360.0 / kGearRatio;
 
@@ -20,7 +20,7 @@ public class PivotConstants {
   public static final boolean kHomeWithCurrent = true;
 
   public record PivotHardware(
-      int motorIDLeft, int motorIDRight, double gearRatio, double rotorRotationsToDegrees) {}
+      int motorID, double gearRatio, double rotorRotationsToDegrees) {}
 
   public record PivotGains(
       double p,
@@ -46,8 +46,7 @@ public class PivotConstants {
 
   public static final PivotHardware kPivotHardware =
       new PivotHardware(
-          20, // left motor CAN ID
-          21, // right motor CAN ID
+          7, // left motor CAN ID
           kGearRatio,
           kRotorRotationsToDegrees);
 

@@ -7,16 +7,16 @@ import frc.robot.Constants;
 
 public class TurretConstants {
 
-  public static final double kSensorMechanismRatio = 11.3333333333; // sensor to mechanism
-public static final double kRotorSensorGearRatio = 6.136; // rotor to sensor
+  public static final double kSensorMechanismRatio = 69.5454; // sensor to mechanism
+public static final double kRotorSensorGearRatio = 1.0; // rotor to sensor
 
   public static final double kRotorRotationsToDegrees = 360.0 / kSensorMechanismRatio;
 
   public static final double kHomeRadians = 0;
   public static final double kToleranceRotations = 0.5;
 
-  public static final double kMinRadiansLimit = -0.25;
-  public static final double kMaxRadiansLimit = 0.25;
+  public static final double kMinRadiansLimit = -Math.PI/2;
+  public static final double kMaxRadiansLimit = Math.PI/2;
 
   public static final double kTurretOffsetX = -0.1354074;
   public static final double kTurretOffsetY = 0.143215;
@@ -58,7 +58,7 @@ public static final double kRotorSensorGearRatio = 6.136; // rotor to sensor
 
   public static final TurretGains kTurretGains =
       switch (Constants.currentMode) {
-        case REAL -> new TurretGains(0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00, 120.0, 240.0, 0);
+        case REAL -> new TurretGains(110, 0.0, 0.0, 0.0, 0.0, 0.0, 0.00, 120.0, 240.0, 0);
 
         case SIM -> new TurretGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 
