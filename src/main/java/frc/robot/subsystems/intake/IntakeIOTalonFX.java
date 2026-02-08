@@ -26,8 +26,7 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMotorConfiguration;
 
 public class IntakeIOTalonFX implements IntakeIO {
 
-  private final TalonFX motorLeft;
-  private final TalonFX motorRight;
+  private final TalonFX motorIntakePivot;
   private final CANcoder canCoder;
 
   private final TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
@@ -45,8 +44,7 @@ public class IntakeIOTalonFX implements IntakeIO {
   public IntakeIOTalonFX(
       IntakeHardware hardware, IntakeMotorConfiguration configuration, IntakeGains gains) {
 
-    motorLeft = new TalonFX(hardware.motorIdLeft());
-    motorRight = new TalonFX(hardware.motorIdRight());
+    motorIntakePivot = new TalonFX(hardware.motorIdPivot());
     canCoder = new CANcoder(hardware.canCoderId());
 
     motorConfiguration.Slot0.kP = gains.p();
@@ -87,18 +85,16 @@ public class IntakeIOTalonFX implements IntakeIO {
     motorConfiguration.Feedback.SensorToMechanismRatio =
         1.0; // raw rotations, we handle meters conversion
 
-    motorLeft.setPosition(0.0);
-    motorRight.setPosition(0.0);
+    motorIntakePivot.setPosition(0.0);
 
-    motorLeft.getConfigurator().apply(motorConfiguration, 1.0);
-    motorRight.getConfigurator().apply(motorConfiguration, 1.0);
+    motorIntakePivot.getConfigurator().apply(motorConfiguration, 1.0);
 
-    positionLeft = motorLeft.getPosition();
-    velocityLeft = motorLeft.getVelocity();
-    appliedVoltsLeft = motorLeft.getMotorVoltage();
-    supplyCurrentAmpsLeft = motorLeft.getSupplyCurrent();
-    statorCurrentAmpsLeft = motorLeft.getStatorCurrent();
-    temperatureCelsiusLeft = motorLeft.getDeviceTemp();
+    positionLeft = motorIntakePivot.getPosition();
+    velocityLeft = motorIntakePivot.getVelocity();
+    appliedVoltsLeft = motorIntakePivot.getMotorVoltage();
+    supplyCurrentAmpsLeft = motorIntakePivot.getSupplyCurrent();
+    statorCurrentAmpsLeft = motorIntakePivot.getStatorCurrent();
+    temperatureCelsiusLeft = motorIntakePivot.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         IntakeConstants.kStatusSignalUpdateFrequencyHz,
@@ -109,11 +105,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         statorCurrentAmpsLeft,
         temperatureCelsiusLeft);
 
-    motorLeft.optimizeBusUtilization(0.0, 1.0);
-    motorRight.optimizeBusUtilization(0.0, 1.0);
+    motorIntakePivot.optimizeBusUtilization(0.0, 1.0);
 
     // Right motor follows left
-    motorRight.setControl(new Follower(hardware.motorIdLeft(), MotorAlignmentValue.Opposed));
   }
 
   @Override
@@ -140,23 +134,23 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void setVoltage(double volts) 
   {
 
-    motorLeft.setControl(voltageControl.withOutput(volts));
+    motorIntakePivot.setControl(voltageControl.withOutput(volts));
   }
 
   @Override
   public void setPosition(double positionRadians) {
-    motorLeft.setControl(
+    motorIntakePivot.setControl(
         positionControl.withPosition(Units.radiansToRotations(positionRadians)).withSlot(0));
   }
 
   @Override
   public void stop() {
-    motorLeft.stopMotor();
+    motorIntakePivot.stopMotor();
   }
 
   @Override
   public void resetPosition() {
-    motorLeft.setPosition(0.0);
+    motorIntakePivot.setPosition(0.0);
   }
 
   @Override
@@ -170,7 +164,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     slot0.kA = a;
     slot0.kG = g;
 
-    motorLeft.getConfigurator().apply(slot0);
+    motorIntakePivot.getConfigurator().apply(slot0);
   }
 
   @Override
@@ -180,11 +174,11 @@ public class IntakeIOTalonFX implements IntakeIO {
     motionMagic.MotionMagicAcceleration = Units.radiansToRotations(maxAcceleration);
     motionMagic.MotionMagicJerk = 10.0 * Units.radiansToRotations(maxAcceleration);
 
-    motorLeft.getConfigurator().apply(motionMagic);
+    motorIntakePivot.getConfigurator().apply(motionMagic);
   }
 
   @Override
   public void setBrakeMode(boolean brake) {
-    motorLeft.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    motorIntakePivot.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 }

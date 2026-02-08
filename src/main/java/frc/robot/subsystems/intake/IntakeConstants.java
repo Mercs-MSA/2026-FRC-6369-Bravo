@@ -26,7 +26,7 @@ public class IntakeConstants {
   public static final double kSimGearing = 9.0 / 1.0; // gearing used in simulator ONLY
 
   public record IntakeHardware(
-      int motorIdLeft, int motorIdRight, int canCoderId, double rotorRotationsToMeters) {}
+      int motorIdPivot, int motorIdDrive, int canCoderId, double rotorRotationsToMeters) {}
 
   public record IntakeGains(
       double p,
