@@ -10,7 +10,7 @@ public class IntakeConstants {
   public static final double kMaxPositionMeters = Units.inchesToMeters(62.0);
   public static final double kMinPositionMeters = Units.inchesToMeters(-0.1);
   public static final double kPositionToleranceMeters = 0.03;
-  public static final double kGearingRatio= 25;
+  public static final double kGearingRatioSensorToMechanism = 22;
 
   public static final double kFlywheelSpeedToleranceRps = 2.0;
 
@@ -61,9 +61,9 @@ public class IntakeConstants {
 
   public static final IntakeHardware kIntakeHardware =
       new IntakeHardware(
-          14,
-          19,
-          35, // Motor CAN ID
+          9,
+          22,
+          63, // Motor CAN ID // TODO: charlie
           kRotorRotationsToMeters); // Drum (sprocket) circumference
 
   public static final IntakeGains kIntakeGains =
@@ -74,7 +74,7 @@ public class IntakeConstants {
 
   public static final IntakeMotorConfiguration kMotorConfiguration =
       new IntakeMotorConfiguration(
-          true, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+          false, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
 
   public static final SimulationConfiguration kSimulationConfiguration =
       new SimulationConfiguration(

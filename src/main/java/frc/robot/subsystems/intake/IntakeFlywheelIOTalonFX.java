@@ -18,8 +18,7 @@ import edu.wpi.first.units.measure.Voltage;
 
 public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
 
-  private final TalonFX motorLeft;
-  private final TalonFX motorRight;
+  private final TalonFX motor;
 
   private final TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
@@ -36,8 +35,7 @@ public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
       IntakeFlywheelConstants.FlywheelMotorConfiguration configuration,
       IntakeFlywheelConstants.FlywheelGains gains) {
 
-    motorLeft = new TalonFX(hardware.motorIDLeft());
-    motorRight = new TalonFX(hardware.motorIDRight());
+    motor = new TalonFX(hardware.motorID());
 
     motorConfiguration.Slot0.kP = gains.p();
     motorConfiguration.Slot0.kI = gains.i();
@@ -64,17 +62,15 @@ public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
     motorConfiguration.Feedback.SensorToMechanismRatio =
         hardware.motorRotationsToFlywheelRotations();
 
-    motorLeft.setPosition(0.0);
-    motorRight.setPosition(0.0);
+    motor.setPosition(0.0);
 
-    motorLeft.getConfigurator().apply(motorConfiguration, 1.0);
-    motorRight.getConfigurator().apply(motorConfiguration, 1.0);
+    motor.getConfigurator().apply(motorConfiguration, 1.0);
 
-    velocityLeft = motorLeft.getVelocity();
-    appliedVoltsLeft = motorLeft.getMotorVoltage();
-    supplyCurrentAmpsLeft = motorLeft.getSupplyCurrent();
-    statorCurrentAmpsLeft = motorLeft.getStatorCurrent();
-    temperatureCelsiusLeft = motorLeft.getDeviceTemp();
+    velocityLeft = motor.getVelocity();
+    appliedVoltsLeft = motor.getMotorVoltage();
+    supplyCurrentAmpsLeft = motor.getSupplyCurrent();
+    statorCurrentAmpsLeft = motor.getStatorCurrent();
+    temperatureCelsiusLeft = motor.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         IntakeFlywheelConstants.kStatusSignalUpdateFrequencyHz,
@@ -84,10 +80,7 @@ public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
         statorCurrentAmpsLeft,
         temperatureCelsiusLeft);
 
-    motorLeft.optimizeBusUtilization(0.0, 1.0);
-    motorRight.optimizeBusUtilization(0.0, 1.0);
-
-    motorRight.setControl(new Follower(hardware.motorIDLeft(), MotorAlignmentValue.Opposed));
+    motor.optimizeBusUtilization(0.0, 1.0);
   }
 
   @Override
@@ -110,17 +103,17 @@ public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
 
   @Override
   public void setVelocity(double rotationsPerSec) {
-    motorLeft.setControl(velocityControl.withVelocity(rotationsPerSec));
+    motor.setControl(velocityControl.withVelocity(rotationsPerSec));
   }
 
   @Override
   public void stop() {
-    motorLeft.stopMotor();
+    motor.stopMotor();
   }
 
   @Override
   public void resetPosition() {
-    motorLeft.setPosition(0.0);
+    motor.setPosition(0.0);
   }
 
   @Override
@@ -133,11 +126,11 @@ public class IntakeFlywheelIOTalonFX implements IntakeFlywheelIO {
     slot0.kV = v;
     slot0.kA = a;
     slot0.kG = g;
-    motorLeft.getConfigurator().apply(slot0);
+    motor.getConfigurator().apply(slot0);
   }
 
   @Override
   public void setBrakeMode(boolean brake) {
-    motorLeft.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
+    motor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
 }

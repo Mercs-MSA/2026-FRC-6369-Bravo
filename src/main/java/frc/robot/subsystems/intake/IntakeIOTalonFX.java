@@ -56,9 +56,9 @@ public class IntakeIOTalonFX implements IntakeIO {
     motorConfiguration.Slot0.kG = gains.g();
     motorConfiguration.Slot0.GravityType = IntakeConstants.gravityType;
     
-    motorConfiguration.Feedback.FeedbackRemoteSensorID= canCoder.getDeviceID();
-    motorConfiguration.Feedback.FeedbackSensorSource= FeedbackSensorSourceValue.FusedCANcoder;
-    motorConfiguration.Feedback.RotorToSensorRatio= IntakeConstants.kGearingRatio;
+    // motorConfiguration.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
+    motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    motorConfiguration.Feedback.SensorToMechanismRatio = IntakeConstants.kGearingRatioSensorToMechanism;
 
     // Motion Magic in ROTATIONS, convert from meters
     motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
@@ -80,10 +80,6 @@ public class IntakeIOTalonFX implements IntakeIO {
         configuration.invert()
             ? InvertedValue.CounterClockwise_Positive
             : InvertedValue.Clockwise_Positive;
-
-    motorConfiguration.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    motorConfiguration.Feedback.SensorToMechanismRatio =
-        1.0; // raw rotations, we handle meters conversion
 
     motorIntakePivot.setPosition(0.0);
 

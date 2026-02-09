@@ -11,7 +11,7 @@ public class IntakeFlywheelConstants {
   public static final int kLinearFilterSampleCount = 5;
 
   public record FlywheelHardware(
-      int motorIDLeft, int motorIDRight, double motorRotationsToFlywheelRotations) {}
+      int motorID, double motorRotationsToFlywheelRotations) {}
 
   public record FlywheelGains(
       double p,
@@ -37,13 +37,12 @@ public class IntakeFlywheelConstants {
 
   public static final FlywheelHardware kFlywheelHardware =
       new FlywheelHardware(
-          20, // left motor CAN ID
-          21, // right motor CAN ID
+          22, // left motor CAN ID
           kMotorRotationsToFlywheelRotations);
 
   public static final FlywheelGains kFlywheelGains =
       switch (Constants.currentMode) {
-        case REAL -> new FlywheelGains(12.0, 0.0, 0.4, 0.2, 0.6, 1.3, 0.05, 120.0, 240.0, 0);
+        case REAL -> new FlywheelGains(12.0, 0.0, 0.0, 0.0, 0.0, 1.3, 0.00, 120.0, 240.0, 0);
 
         case SIM -> new FlywheelGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 

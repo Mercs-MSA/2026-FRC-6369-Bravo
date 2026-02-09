@@ -34,6 +34,7 @@ import frc.robot.subsystems.drive.Drive.Drive.DriveState;
 import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
+import frc.robot.subsystems.flywheel.Flywheel.FlywheelState;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.pivot.PivotIOTalonFX;
@@ -51,6 +52,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIOTalonFX;
+import frc.robot.subsystems.intake.Intake.IntakeFlywheelGoal;
+import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeFlywheelIOTalonFX;
 import frc.robot.subsystems.intake.IntakeFlywheelConstants;
@@ -74,10 +77,10 @@ public class RobotContainer {
   public final Drive drive;
   public final Vision vision;
 
-  // public final Flywheel shooterFlywheels;
+  public final Flywheel shooterFlywheels;
   public final Pivot shooterHood;
   public final Turret shooterTurret;
-  // public final Intake intake
+  public final Intake intake;
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -109,10 +112,10 @@ public class RobotContainer {
                 });
 
         // Shooter
-        // shooterFlywheels =
-        //         new Flywheel(
-        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-        //         );
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+                );
 
         shooterHood = 
                 new Pivot(
@@ -122,10 +125,10 @@ public class RobotContainer {
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        // intake =
-        //         new Intake(
-        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
         break;
 
@@ -150,10 +153,10 @@ public class RobotContainer {
                 });
 
         // Shooter
-        // shooterFlywheels =
-        //         new Flywheel(
-        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-        //         );
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+                );
 
         shooterHood = 
                 new Pivot(
@@ -163,10 +166,10 @@ public class RobotContainer {
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        // intake =
-        //         new Intake(
-        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
         
 
         break;
@@ -193,10 +196,10 @@ public class RobotContainer {
 
      
         // Shooter
-        // shooterFlywheels =
-        //         new Flywheel(
-        //           new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
-        //         );
+        shooterFlywheels =
+                new Flywheel(
+                  new FlywheelIOTalonFX(FlywheelConstants.kFlywheelHardware, FlywheelConstants.kMotorConfiguration, FlywheelConstants.kFlywheelGains), shooterMath
+                );
 
         shooterHood = 
                 new Pivot(
@@ -206,10 +209,10 @@ public class RobotContainer {
                 new Turret(
                   new TurretIOTalonFX(TurretConstants.kTurretHardware, TurretConstants.kMotorConfiguration, TurretConstants.kTurretGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), drive, shooterMath);
 
-        // intake =
-        //         new Intake(
-        //           new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
-        //           new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
+        intake =
+                new Intake(
+                  new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
+                  new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
         break;
     }
@@ -293,25 +296,25 @@ public class RobotContainer {
       Commands.runEnd(() -> {drive.acceptJoystickInputs(()->-0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
 
-    driverController
-        .y()
-        .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEVECTOR))
-        .onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
+    // driverController
+    //     .y()
+    //     .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEVECTOR))
+    //     .onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
 
-    driverController
-        .x()
-        .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEPROFILED))
-        .onFalse(drive.setDriveStateCommandContinued(DriveState.TELEOP));
+    // driverController
+    //     .x()
+    //     .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEPROFILED))
+    //     .onFalse(drive.setDriveStateCommandContinued(DriveState.TELEOP));
 
-    SignalLogger.start(); // sysid
-    operatorController.a().whileTrue(
-        drive.sysIdQuasistatic(Direction.kForward));
-    operatorController.b().whileTrue(
-        drive.sysIdQuasistatic(Direction.kReverse));
-    operatorController.x().whileTrue(
-      drive.sysIdDynamic(Direction.kForward));
-    operatorController.y().whileTrue(
-      drive.sysIdDynamic(Direction.kReverse));
+    // SignalLogger.start(); // sysid
+    // operatorController.a().whileTrue(
+    //     drive.sysIdQuasistatic(Direction.kForward));
+    // operatorController.b().whileTrue(
+    //     drive.sysIdQuasistatic(Direction.kReverse));
+    // operatorController.x().whileTrue(
+    //   drive.sysIdDynamic(Direction.kForward));
+    // operatorController.y().whileTrue(
+    //   drive.sysIdDynamic(Direction.kReverse));
 
 
     // driverController
@@ -349,18 +352,36 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-    driverController
-        .leftBumper()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  if (drive.getDriveState() == DriveState.POINTANDDRIVE) {
-                    drive.setDriveStateCommandContinued(DriveState.TELEOP).schedule();
-                  } else {
-                    drive.setDriveStateCommandContinued(DriveState.POINTANDDRIVE).schedule();
-                  }
-                }));
+    // driverController
+    //     .leftBumper()
+    //     .onTrue(
+    //         Commands.runOnce(
+    //             () -> {
+    //               if (drive.getDriveState() == DriveState.POINTANDDRIVE) {
+    //                 drive.setDriveStateCommandContinued(DriveState.TELEOP).schedule();
+    //               } else {
+    //                 drive.setDriveStateCommandContinued(DriveState.POINTANDDRIVE).schedule();
+    //               }
+    //             }));
 
+    driverController.a().onTrue(Commands.runOnce(() -> {
+      intake.setIntakeGoal(IntakeGoal.kStow);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
+      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+    }, intake, shooterFlywheels));
+
+    driverController.x().onTrue(Commands.runOnce(() -> {
+      intake.setIntakeGoal(IntakeGoal.kOut);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
+      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+    }, intake, shooterFlywheels));
+
+    
+    driverController.y().onTrue(Commands.runOnce(() -> {
+      intake.setIntakeGoal(IntakeGoal.kOut);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
+      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+    }, intake, shooterFlywheels));
 
   }
 

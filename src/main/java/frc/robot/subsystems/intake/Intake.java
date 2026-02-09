@@ -17,8 +17,8 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 public class Intake extends SubsystemBase {
   /** List of position setpoints for the Intake in meters */
   public enum IntakeGoal {
-    kOut(() -> 2),
-    kStow(() -> 0);
+    kOut(() -> -1.68),
+    kStow(() -> 0.0);
     /** Custom setpoint that can be modified over network tables; Usefu for debugging */
     private DoubleSupplier goalMeters;
 
@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
 
   public enum IntakeFlywheelGoal {
     kStop(() -> 0),
-    kRunning(() -> 25);
+    kRunning(() -> -25);
 
     private DoubleSupplier goalRps;
 

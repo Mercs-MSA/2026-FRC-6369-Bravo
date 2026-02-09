@@ -24,7 +24,7 @@ public class Turret extends SubsystemBase {
     PROVIDED,
   }
 
-  public TurretGoalState currentState = TurretGoalState.HOME;
+  public TurretGoalState currentState = TurretGoalState.PROVIDED;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
@@ -96,13 +96,6 @@ public class Turret extends SubsystemBase {
     io.setPosition(getTargettingAngle());
   }
 
-  private Pose2d calculateTurretOffset(Pose2d drivePose) {
-    double r = drivePose.getRotation().getRadians();
-    double x = TurretConstants.kTurretOffsetX * Math.cos(r) - TurretConstants.kTurretOffsetY * Math.sin(r);
-    double y = TurretConstants.kTurretOffsetX * Math.sin(r) + TurretConstants.kTurretOffsetY * Math.cos(r);
-    return new Pose2d(drivePose.getX() + x, drivePose.getY() + y, drivePose.getRotation());
-  }
-
   private double getTargettingAngle() {
     var state = currentState;
 
@@ -112,7 +105,7 @@ public class Turret extends SubsystemBase {
       return goalRadians;
     } else {
       
-      Pose2d turretPose = calculateTurretOffset(drive.getPose()); 
+      Pose2d turretPose = TurretOffset.calculateTurretOffset(drive.getPose()); 
       return Math.atan2(goalPose.getY() - turretPose.getY(), goalPose.getX() - turretPose.getX()) - (drive.getPose().getRotation().getRadians() + driveRotationOffset) + goalRotationOffsetRadians;
     }
   }
@@ -134,7 +127,7 @@ public class Turret extends SubsystemBase {
 
   @AutoLogOutput(key = "Turret/TargetIndicator")
   public Pose2d getTargetIndicator() {
-    return new Pose2d(calculateTurretOffset(drive.getPose()).getTranslation(), new Rotation2d(drive.getPose().getRotation().getRadians() + (getTargettingAngle())));
+    return new Pose2d(TurretOffset.calculateTurretOffset(drive.getPose()).getTranslation(), new Rotation2d(drive.getPose().getRotation().getRadians() + (getTargettingAngle())));
   }
 
   @AutoLogOutput(key = "Turret/TargetPoint")

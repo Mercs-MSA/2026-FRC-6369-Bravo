@@ -15,8 +15,8 @@ public static final double kRotorSensorGearRatio = 1.0; // rotor to sensor
   public static final double kHomeRadians = 0;
   public static final double kToleranceRotations = 0.5;
 
-  public static final double kMinRadiansLimit = -Math.PI/2;
-  public static final double kMaxRadiansLimit = Math.PI/2;
+  public static final double kMinRadiansLimit = -Math.PI/1.5;
+  public static final double kMaxRadiansLimit = Math.PI/1.5;
 
   public static final double kTurretOffsetX = -0.1354074;
   public static final double kTurretOffsetY = 0.143215;
@@ -67,5 +67,5 @@ public static final double kRotorSensorGearRatio = 1.0; // rotor to sensor
 
   public static final TurretMotorConfiguration kMotorConfiguration =
       new TurretMotorConfiguration(
-          true, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+          false, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
 }
