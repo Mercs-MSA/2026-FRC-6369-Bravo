@@ -154,7 +154,7 @@ public class ShooterMathProvider {
         var calculation_q111 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[1]));
 
         // Interpolate between points, velocity
-        shooterVelocityTarget = triLerp(
+        shooterVelocityTarget = convertShooterVelocity(triLerp(
             radVel,
             tanVel,
             dist,
@@ -172,7 +172,7 @@ public class ShooterMathProvider {
             SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
-        ) * 6.5; 
+        )); 
         // Interpolate between points, hood angle
         shooterHoodAngle = triLerp(
             radVel,
@@ -217,5 +217,13 @@ public class ShooterMathProvider {
         // update runtime stat
         var tb = Utils.getCurrentTimeSeconds();
         runTime = tb-ta;
+    }
+
+    private static final double FUEL_RADIUS = 0.075; // meters
+    private static final double FLYWHEEL_RADIUS = 0.051; // meters
+    private static final double FLYWHEEL_EFFICIENCY = 0.95; // percent
+
+    private double convertShooterVelocity(double simExitVelocity) {
+        return simExitVelocity * (FLYWHEEL_RADIUS + FUEL_RADIUS) / (FLYWHEEL_EFFICIENCY * FLYWHEEL_RADIUS * FLYWHEEL_RADIUS * 2 * Math.PI);
     }
 }

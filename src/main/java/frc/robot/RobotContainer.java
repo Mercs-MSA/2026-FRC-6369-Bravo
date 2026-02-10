@@ -392,7 +392,7 @@ public class RobotContainer {
     }, intake, shooterFlywheels));
 
     // intake mode
-    driverController.x().onTrue(Commands.runOnce(() -> {
+    driverController.leftBumper().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
       shooterFlywheels.setFlywheelState(FlywheelState.STOP);
@@ -402,7 +402,7 @@ public class RobotContainer {
     }, intake, shooterFlywheels));
     
     // Shooting Mode
-    driverController.y().onTrue(Commands.runOnce(() -> {
+    driverController.rightBumper().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);

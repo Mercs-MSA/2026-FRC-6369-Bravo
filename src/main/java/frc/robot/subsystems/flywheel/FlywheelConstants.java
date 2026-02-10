@@ -43,7 +43,7 @@ public class FlywheelConstants {
 
   public static final FlywheelGains kFlywheelGains =
       switch (Constants.currentMode) {
-        case REAL -> new FlywheelGains(0.2, 0.0, 0.0, 0.0, 0.0, 0.06, 0.0, 120.0, 240.0, 0);
+        case REAL -> new FlywheelGains(0.2, 0.0, 0.0, 0.0, 0.0, 0.114, 0.0, 120.0, 240.0, 0);
 
         case SIM -> new FlywheelGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 

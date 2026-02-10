@@ -44,7 +44,7 @@ public class SpindexerConstants {
 
   public static final SpindexerGains kSpindexIndexGains =
       switch (Constants.currentMode) {
-        case REAL -> new SpindexerGains(0.5, 0.0, 0.0, 0.0, 0.0, 0.147, 0.0, 120.0, 240.0, 0);
+        case REAL -> new SpindexerGains(0.2, 0.0, 0.0, 0.0, 0.0, 0.147, 0.0, 120.0, 240.0, 0);
 
         case SIM -> new SpindexerGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 
