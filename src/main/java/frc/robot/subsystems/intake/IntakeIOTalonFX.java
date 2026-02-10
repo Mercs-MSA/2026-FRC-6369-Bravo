@@ -4,14 +4,11 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.util.Units;
@@ -27,25 +24,24 @@ import frc.robot.subsystems.intake.IntakeConstants.IntakeMotorConfiguration;
 public class IntakeIOTalonFX implements IntakeIO {
 
   private final TalonFX motorIntakePivot;
-  private final CANcoder canCoder;
+  // private final CANcoder canCoder; // TODO: charlie
 
   private final TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
 
-  private StatusSignal<Angle> positionLeft;
-  private StatusSignal<AngularVelocity> velocityLeft;
-  private StatusSignal<Voltage> appliedVoltsLeft;
-  private StatusSignal<Current> supplyCurrentAmpsLeft;
-  private StatusSignal<Current> statorCurrentAmpsLeft;
-  private StatusSignal<Temperature> temperatureCelsiusLeft;
+  private StatusSignal<Angle> position;
+  private StatusSignal<AngularVelocity> velocity;
+  private StatusSignal<Voltage> appliedVolts;
+  private StatusSignal<Current> supplyCurrentAmps;
+  private StatusSignal<Current> statorCurrentAmps;
+  private StatusSignal<Temperature> temperatureCelsius;
 
-  private final VoltageOut voltageControl = new VoltageOut(0.0);
   private final PositionVoltage positionControl = new PositionVoltage(0.0);
 
   public IntakeIOTalonFX(
       IntakeHardware hardware, IntakeMotorConfiguration configuration, IntakeGains gains) {
 
     motorIntakePivot = new TalonFX(hardware.motorIdPivot());
-    canCoder = new CANcoder(hardware.canCoderId());
+    // canCoder = new CANcoder(hardware.canCoderId()); // TODO: charlie
 
     motorConfiguration.Slot0.kP = gains.p();
     motorConfiguration.Slot0.kI = gains.i();
@@ -81,25 +77,25 @@ public class IntakeIOTalonFX implements IntakeIO {
             ? InvertedValue.CounterClockwise_Positive
             : InvertedValue.Clockwise_Positive;
 
-    motorIntakePivot.setPosition(0.0);
+    motorIntakePivot.setPosition(Intake.IntakeGoal.kStow.getGoalRadians());
 
     motorIntakePivot.getConfigurator().apply(motorConfiguration, 1.0);
 
-    positionLeft = motorIntakePivot.getPosition();
-    velocityLeft = motorIntakePivot.getVelocity();
-    appliedVoltsLeft = motorIntakePivot.getMotorVoltage();
-    supplyCurrentAmpsLeft = motorIntakePivot.getSupplyCurrent();
-    statorCurrentAmpsLeft = motorIntakePivot.getStatorCurrent();
-    temperatureCelsiusLeft = motorIntakePivot.getDeviceTemp();
+    position = motorIntakePivot.getPosition();
+    velocity = motorIntakePivot.getVelocity();
+    appliedVolts = motorIntakePivot.getMotorVoltage();
+    supplyCurrentAmps = motorIntakePivot.getSupplyCurrent();
+    statorCurrentAmps = motorIntakePivot.getStatorCurrent();
+    temperatureCelsius = motorIntakePivot.getDeviceTemp();
 
     BaseStatusSignal.setUpdateFrequencyForAll(
         IntakeConstants.kStatusSignalUpdateFrequencyHz,
-        positionLeft,
-        velocityLeft,
-        appliedVoltsLeft,
-        supplyCurrentAmpsLeft,
-        statorCurrentAmpsLeft,
-        temperatureCelsiusLeft);
+        position,
+        velocity,
+        appliedVolts,
+        supplyCurrentAmps,
+        statorCurrentAmps,
+        temperatureCelsius);
 
     motorIntakePivot.optimizeBusUtilization(0.0, 1.0);
 
@@ -107,30 +103,23 @@ public class IntakeIOTalonFX implements IntakeIO {
   }
 
   @Override
-  public void updateInputs(ElevatorIOInputs inputs) {
+  public void updateInputs(IntakeIOInputs inputs) {
     inputs.isMotorConnected =
         BaseStatusSignal.refreshAll(
-                positionLeft,
-                velocityLeft,
-                appliedVoltsLeft,
-                supplyCurrentAmpsLeft,
-                statorCurrentAmpsLeft,
-                temperatureCelsiusLeft)
+                position,
+                velocity,
+                appliedVolts,
+                supplyCurrentAmps,
+                statorCurrentAmps,
+                temperatureCelsius)
             .isOK();
 
-    inputs.position = Units.rotationsToRadians(positionLeft.getValueAsDouble());
-    inputs.velocityRadianssPerSec = Units.rotationsToRadians(velocityLeft.getValueAsDouble());
-    inputs.appliedVolts = appliedVoltsLeft.getValueAsDouble();
-    inputs.statorCurrentAmps = statorCurrentAmpsLeft.getValueAsDouble();
-    inputs.supplyCurrentAmps = supplyCurrentAmpsLeft.getValueAsDouble();
-    inputs.temperatureCelsius = temperatureCelsiusLeft.getValueAsDouble();
-  }
-
-  @Override
-  public void setVoltage(double volts) 
-  {
-
-    motorIntakePivot.setControl(voltageControl.withOutput(volts));
+    inputs.position = Units.rotationsToRadians(position.getValueAsDouble());
+    inputs.velocityRadianssPerSec = Units.rotationsToRadians(velocity.getValueAsDouble());
+    inputs.appliedVolts = appliedVolts.getValueAsDouble();
+    inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
+    inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
+    inputs.temperatureCelsius = temperatureCelsius.getValueAsDouble();
   }
 
   @Override
@@ -177,4 +166,9 @@ public class IntakeIOTalonFX implements IntakeIO {
   public void setBrakeMode(boolean brake) {
     motorIntakePivot.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
   }
+
+@Override
+public double getPosition() {
+  return position.getValueAsDouble();
+}
 }

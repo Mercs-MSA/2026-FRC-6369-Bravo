@@ -50,6 +50,7 @@ public class IntakeConstants {
       double peakReverseVoltage,
       // double maxPositionRotations,
       NeutralModeValue neutralMode) {}
+      // TODO: add min/max soft limits
 
   public record SimulationConfiguration(
       DCMotor motorType,

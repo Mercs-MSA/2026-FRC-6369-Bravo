@@ -2,7 +2,7 @@ package frc.robot.subsystems.intake;
 
 public interface IntakeIO {
 
-  public class ElevatorIOInputs {
+  public class IntakeIOInputs {
     public boolean isMotorConnected = false;
 
     public double position = 0.0;
@@ -13,9 +13,7 @@ public interface IntakeIO {
     public double temperatureCelsius = 0.0;
   }
 
-  public void updateInputs(ElevatorIOInputs inputs);
-
-  public void setVoltage(double volts);
+  public void updateInputs(IntakeIOInputs inputs);
 
   public void setPosition(double positionRadians);
 
@@ -28,4 +26,6 @@ public interface IntakeIO {
   public void setMotionMagicConstraints(double maxVelocity, double maxAcceleration);
 
   public void setBrakeMode(boolean brake);
+ 
+  public double getPosition();
 }

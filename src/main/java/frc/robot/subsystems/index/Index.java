@@ -1,4 +1,4 @@
-package frc.robot.subsystems.flywheel;
+package frc.robot.subsystems.index;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -8,18 +8,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.math.ShooterMathProvider;
-import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 
-public class Flywheel extends SubsystemBase {
-  public enum FlywheelState {
+public class Index extends SubsystemBase {
+  public enum IndexState {
     STOP,
     PROVIDED
   }
 
-  public FlywheelState currentState = FlywheelState.STOP;
+  private IndexState currentState = IndexState.STOP;
 
-  private final FlywheelIO io;
-  private final FlywheelIOInputsAutoLogged inputs = new FlywheelIOInputsAutoLogged();
+  private final IndexIO io;
+  private final IndexIOInputsAutoLogged inputs = new IndexIOInputsAutoLogged();
 
   private double goalSpeedRPS = 0.0;
 
@@ -28,7 +27,7 @@ public class Flywheel extends SubsystemBase {
 
   private final ShooterMathProvider math;
 
-  public Flywheel(FlywheelIO io, ShooterMathProvider math) {
+  public Index(IndexIO io, ShooterMathProvider math) {
     this.io = io;
     this.math = math;
   }
@@ -36,7 +35,7 @@ public class Flywheel extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Flywheel/Inputs", inputs);
+    Logger.processInputs("Index/Inputs", inputs);
 
     if (DriverStation.isDisabled()) {
       stop();
@@ -48,37 +47,37 @@ public class Flywheel extends SubsystemBase {
       return;
     }
 
-    if (currentState == FlywheelState.PROVIDED) {
-      goalSpeedRPS = math.shooterVelocityTarget;
+    if (currentState == IndexState.PROVIDED) {
+      goalSpeedRPS = math.shooterVelocityTarget * IndexConstants.kSpeedRatio;
     }
 
-    if (currentState == FlywheelState.STOP) {
+    if (currentState == IndexState.STOP) {
       goalSpeedRPS = 0.0;
     }
 
-    io.setVelocity(goalSpeedRPS);
+    io.setVelocity(Math.min(goalSpeedRPS, IndexConstants.kIndexVelocityLimitRPS));
   }
 
-  public void setFlywheelState(FlywheelState state) {
+  public void setIndexState(IndexState state) {
     this.currentState = state;
   }
 
   public void setCustomSpeedRPS(double speedRPS) {
     goalSpeedRPS = speedRPS;
-    currentState = FlywheelState.PROVIDED;
+    currentState = IndexState.PROVIDED;
   }
 
   public void stop() {
     io.stop();
   }
 
-  @AutoLogOutput(key = "Flywheel/AtSpeed")
+  @AutoLogOutput(key = "Index/AtSpeed")
   public boolean atSpeed() {
     double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
-    return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);  //TODO: tune, this is probably way too tight; might need to be closer to 2 during fast shooting
+    return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);
   }
 
-  @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")
+  @AutoLogOutput(key = "Index/GoalSpeedRPS")
   public double getGoalSpeedRPS() {
     return goalSpeedRPS;
   }

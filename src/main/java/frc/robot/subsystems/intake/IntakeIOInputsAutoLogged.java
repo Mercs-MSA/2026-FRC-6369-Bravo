@@ -3,7 +3,7 @@ package frc.robot.subsystems.intake;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
-public class IntakeIOInputsAutoLogged extends IntakeIO.ElevatorIOInputs
+public class IntakeIOInputsAutoLogged extends IntakeIO.IntakeIOInputs
     implements LoggableInputs, Cloneable {
   @Override
   public void toLog(LogTable table) {

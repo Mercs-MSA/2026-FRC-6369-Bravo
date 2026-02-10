@@ -8,22 +8,12 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.util.FlippingUtil;
 
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.generated.TunerConstants;
-import frc.robot.math.SimulationResults;
 import frc.robot.util.BinaryLoader;
 
 public class ShooterMathProvider {
@@ -41,7 +31,7 @@ public class ShooterMathProvider {
     public static final double robotMOI = 2.000; // moment of inertia
 
     // position of hub opening on blue side
-    public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);
+    public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);   // TODO: verify accuracy of position
 
     // indexing info returned from simulation generator.py
     // https://github.com/Mercs-MSA/2026-FRC-6369-ShooterSimulation

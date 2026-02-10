@@ -1,11 +1,10 @@
-package frc.robot.subsystems.flywheel;
-
+package frc.robot.subsystems.spindexer;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface FlywheelIO {
+public interface SpindexerIO {
 
   @AutoLog
-  public class FlywheelIOInputs {
+  public class SpindexerIOInputs {
     public boolean isMotorConnected = false;
     public double positionRotations = 0.0;
     public double velocityRotationsPerSec = 0.0;
@@ -15,7 +14,7 @@ public interface FlywheelIO {
     public double temperatureCelsius = 0.0;
   }
 
-  public void updateInputs(FlywheelIOInputs inputs);
+  public void updateInputs(SpindexerIOInputs inputs);
 
   public void setVelocity(double velocityRotationsPerSec);
 

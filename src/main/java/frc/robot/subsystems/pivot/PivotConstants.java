@@ -38,6 +38,7 @@ public class PivotConstants {
       double peakForwardVoltage,
       double peakReverseVoltage,
       NeutralModeValue neutralMode) {}
+      // TODO: add min/max soft limits
 
   public static final PivotHardware kPivotHardware =
       new PivotHardware(

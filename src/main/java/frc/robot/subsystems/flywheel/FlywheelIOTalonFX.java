@@ -119,11 +119,6 @@ public class FlywheelIOTalonFX implements FlywheelIO {
   }
 
   @Override
-  public void resetPosition() {
-    motorLeft.setPosition(0.0);
-  }
-
-  @Override
   public void setGains(double p, double i, double d, double s, double g, double v, double a) {
     var slot0 = new Slot0Configs();
     slot0.kP = p;

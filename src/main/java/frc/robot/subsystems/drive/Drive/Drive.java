@@ -56,7 +56,7 @@ public class Drive extends SubsystemBase {
 
   public static enum DriveState {
     TELEOP,
-    DRIVETOPOSEVECTOR,
+    DRIVETOCLIMB,
     DRIVETOPOSEPROFILED,
     POINTANDDRIVE,
     AUTO
@@ -155,16 +155,16 @@ public class Drive extends SubsystemBase {
         PP_CONFIG,
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
         this);
-    // Pathfinding.setPathfinder(new LocalADStarAK());
-    // PathPlannerLogging.setLogActivePathCallback(
-    //     (activePath) -> {
-    //       Logger.recordOutput(
-    //           "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-    //     });
-    // PathPlannerLogging.setLogTargetPoseCallback(
-    //     (targetPose) -> {
-    //       Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-    //     });
+    Pathfinding.setPathfinder(new LocalADStarAK());
+    PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
 
     // Configure SysId
     sysId =
@@ -236,22 +236,27 @@ public class Drive extends SubsystemBase {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    switch (driveState) {
-      case TELEOP:
-        desiredSpeeds = teleopController.ComputeChassisSpeeds();
-        break;
-      case DRIVETOPOSEVECTOR:
-        desiredSpeeds = holonomicController.calculate(goalPose, getPose(), getChassisSpeeds());
-        break;
-      case DRIVETOPOSEPROFILED:
-        desiredSpeeds = holonomicControllerProfiled.calculate(goalPose, getPose());
-        break;
-      case POINTANDDRIVE:
-        desiredSpeeds = PointAndDriveController.calculate(this, goalPose.getTranslation());
-        break;
+    if (driveState != DriveState.AUTO) {
+      switch (driveState) {
+        case TELEOP:
+          desiredSpeeds = teleopController.ComputeChassisSpeeds();
+          break;
+        case DRIVETOCLIMB:
+          desiredSpeeds = holonomicController.calculate(goalPose, getPose(), getChassisSpeeds());
+          break;
+        case DRIVETOPOSEPROFILED:
+          desiredSpeeds = holonomicControllerProfiled.calculate(goalPose, getPose());
+          break;
+        case POINTANDDRIVE:
+          desiredSpeeds = PointAndDriveController.calculate(this, goalPose.getTranslation());
+          break;
+        default:
+          desiredSpeeds = null;
+      }
+      if (desiredSpeeds != null) {
+        runVelocity(desiredSpeeds);
+      }
     }
-
-    if (desiredSpeeds != null && driveState != DriveState.AUTO) runVelocity(desiredSpeeds);
   }
 
   /**
@@ -399,11 +404,11 @@ public class Drive extends SubsystemBase {
             ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getPose().getRotation()));
         goalPose = new Pose2d(2, 2, new Rotation2d(1)); // use getter here
         break;
-      case DRIVETOPOSEVECTOR:
+      case DRIVETOCLIMB:
         holonomicController.reset(
             getPose(),
             ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getPose().getRotation()));
-        goalPose = new Pose2d(2, 3, new Rotation2d(2)); // use getter here
+        goalPose = new Pose2d(2, 3, new Rotation2d(0)); // use getter here
         break;
       case POINTANDDRIVE:
         PointAndDriveController.reset();

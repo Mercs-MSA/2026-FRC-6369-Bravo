@@ -10,11 +10,13 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.NetworkTableValue;
 import frc.robot.math.ShooterMathProvider;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Drive;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
+import com.pathplanner.lib.util.FlippingUtil;
 
 public class Turret extends SubsystemBase {
 
@@ -24,7 +26,7 @@ public class Turret extends SubsystemBase {
     PROVIDED,
   }
 
-  public TurretGoalState currentState = TurretGoalState.HOME;
+  public TurretGoalState currentState = TurretGoalState.PROVIDED;
   private final TurretIO io;
   private final TurretIOInputsAutoLogged inputs = new TurretIOInputsAutoLogged();
 
@@ -87,7 +89,11 @@ public class Turret extends SubsystemBase {
     // target point (world pose) and store it in goalPose so the targeting
     // math below will use it.
     if (currentState == TurretGoalState.PROVIDED) {
-      goalPose = new Pose2d(shooterMathProvider.targetPositionBlueSide, new Rotation2d());
+      goalPose = new Pose2d(
+        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? 
+        FlippingUtil.flipFieldPose(new Pose2d(ShooterMathProvider.targetPositionBlueSide, new Rotation2d())).getTranslation() : 
+        ShooterMathProvider.targetPositionBlueSide, new Rotation2d()
+      );
       goalRotationOffsetRadians = shooterMathProvider.shooterTurretDelta;
     } else {
       goalRotationOffsetRadians = 0.0;
@@ -149,7 +155,7 @@ public class Turret extends SubsystemBase {
     return getTargettingAngle();
   }
 
-  public void setPivotState(TurretGoalState state) {
+  public void setTurretState(TurretGoalState state) {
     this.currentState = state;
   }
 

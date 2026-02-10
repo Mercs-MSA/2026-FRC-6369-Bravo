@@ -13,7 +13,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,8 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
@@ -35,12 +33,18 @@ import frc.robot.subsystems.flywheel.Flywheel;
 import frc.robot.subsystems.flywheel.FlywheelConstants;
 import frc.robot.subsystems.flywheel.FlywheelIOTalonFX;
 import frc.robot.subsystems.flywheel.Flywheel.FlywheelState;
+import frc.robot.subsystems.index.Index;
+import frc.robot.subsystems.index.IndexConstants;
+import frc.robot.subsystems.index.IndexIOTalonFX;
+import frc.robot.subsystems.index.Index.IndexState;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.pivot.PivotIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot.PivotState;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretConstants;
 import frc.robot.subsystems.turret.TurretIOTalonFX;
+import frc.robot.subsystems.turret.Turret.TurretGoalState;
 import frc.robot.subsystems.drive.Drive.GyroIO;
 import frc.robot.subsystems.drive.Drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.Drive.ModuleIO;
@@ -57,6 +61,11 @@ import frc.robot.subsystems.intake.Intake.IntakeGoal;
 import frc.robot.subsystems.intake.IntakeConstants;
 import frc.robot.subsystems.intake.IntakeFlywheelIOTalonFX;
 import frc.robot.subsystems.intake.IntakeFlywheelConstants;
+import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerConstants;
+import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
+import frc.robot.subsystems.spindexer.Spindexer.SpindexerState;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -81,6 +90,11 @@ public class RobotContainer {
   public final Pivot shooterHood;
   public final Turret shooterTurret;
   public final Intake intake;
+  public final Spindexer spindexer;
+
+  public final Index index;
+  public final Trigger flywheelsAtGoalTrigger;
+
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -130,6 +144,15 @@ public class RobotContainer {
                   new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
                   new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
+        index = 
+                new Index(
+                  new IndexIOTalonFX(IndexConstants.kIndexHardware, IndexConstants.kMotorConfiguration, IndexConstants.kIndexGains), shooterMath
+                );
+
+        spindexer = new Spindexer(
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+        );
+        
         break;
 
       case SIM:
@@ -171,6 +194,14 @@ public class RobotContainer {
                   new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
                   new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
         
+        index = 
+                new Index(
+                  new IndexIOTalonFX(IndexConstants.kIndexHardware, IndexConstants.kMotorConfiguration, IndexConstants.kIndexGains), shooterMath
+                );
+
+        spindexer = new Spindexer(
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+        );
 
         break;
 
@@ -214,8 +245,19 @@ public class RobotContainer {
                   new IntakeIOTalonFX(IntakeConstants.kIntakeHardware, IntakeConstants.kMotorConfiguration, IntakeConstants.kIntakeGains),
                   new IntakeFlywheelIOTalonFX(IntakeFlywheelConstants.kFlywheelHardware, IntakeFlywheelConstants.kMotorConfiguration, IntakeFlywheelConstants.kFlywheelGains));
 
+        index = 
+                new Index(
+                  new IndexIOTalonFX(IndexConstants.kIndexHardware, IndexConstants.kMotorConfiguration, IndexConstants.kIndexGains), shooterMath
+                );
+                
+        spindexer = new Spindexer(
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+        );
+
         break;
     }
+
+    flywheelsAtGoalTrigger = new Trigger(() -> shooterFlywheels.atSpeed());
 
     // Create auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -295,10 +337,11 @@ public class RobotContainer {
       Commands.runEnd(() -> {drive.acceptJoystickInputs(()->-0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
 
-    // driverController
-    //     .y()
-    //     .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOPOSEVECTOR))
-    //     .onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
+    // prepare for climb
+    driverController
+        .back()
+        .onTrue(drive.setDriveStateCommandContinued(DriveState.DRIVETOCLIMB))
+        .onFalse(drive.setDriveStateCommand(DriveState.TELEOP));
 
     // driverController
     //     .x()
@@ -314,31 +357,6 @@ public class RobotContainer {
     //   drive.sysIdDynamic(Direction.kForward));
     // operatorController.y().whileTrue(
     //   drive.sysIdDynamic(Direction.kReverse));
-
-
-    // driverController
-    //     .a()
-    //     .onTrue(Commands.runOnce(() -> {
-    //       turret.setGoalPose(new Pose2d(3, 3, new Rotation2d(0.0)));
-    //     }, turret));
-
-    // driverController
-    //     .b()
-    //     .onTrue(Commands.runOnce(() -> {
-    //       turret.setGoalTx(0);
-    //     }, turret));
-
-    // driverController
-    //     .start()
-    //     .onTrue(Commands.runOnce(() -> {
-    //       turret.setAutoTargetting(new Pose2d(5, 5, new Rotation2d(0.0)), 0, 19);
-    //     }, turret));
-
-    // driverController
-    //     .back()
-    //     .onTrue(Commands.runOnce(() -> {
-    //       turret.home();
-    //     }, turret));
 
     // Reset gyro to 0° when B button is pressed
     driverController
@@ -362,25 +380,39 @@ public class RobotContainer {
     //                 drive.setDriveStateCommandContinued(DriveState.POINTANDDRIVE).schedule();
     //               }
     //             }));
-
+    
+    // Reset everything to stowed position
     driverController.a().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kStow);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+      shooterTurret.setTurretState(TurretGoalState.HOME);
+      index.setIndexState(IndexState.STOP);
+      spindexer.setIndexState(SpindexerState.STOP);
     }, intake, shooterFlywheels));
 
+    // intake mode
     driverController.x().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+      index.setIndexState(IndexState.STOP);
+      spindexer.setIndexState(SpindexerState.STOP);
     }, intake, shooterFlywheels));
-
     
+    // Shooting Mode
     driverController.y().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
     }, intake, shooterFlywheels));
+
+    flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
+      if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {
+        index.setIndexState(IndexState.PROVIDED);
+        spindexer.setIndexState(SpindexerState.RUNNING);
+      }
+    }));
 
   }
 

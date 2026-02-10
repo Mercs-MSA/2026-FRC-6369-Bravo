@@ -4,15 +4,10 @@
 
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.math.filter.LinearFilter;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 
 public class Intake extends SubsystemBase {
   /** List of position setpoints for the Intake in meters */
@@ -20,20 +15,20 @@ public class Intake extends SubsystemBase {
     kOut(() -> -1.68),
     kStow(() -> 0.0);
     /** Custom setpoint that can be modified over network tables; Usefu for debugging */
-    private DoubleSupplier goalMeters;
+    private DoubleSupplier goal;
 
     IntakeGoal(DoubleSupplier goalMeters) {
-      this.goalMeters = goalMeters;
+      this.goal = goalMeters;
     }
 
-    public double getGoalMeters() {
-      return this.goalMeters.getAsDouble();
+    public double getGoalRadians() {
+      return this.goal.getAsDouble();
     }
   }
 
   public enum IntakeFlywheelGoal {
     kStop(() -> 0),
-    kRunning(() -> -25);
+    kRunning(() -> 25);
 
     private DoubleSupplier goalRps;
 
@@ -72,7 +67,7 @@ public class Intake extends SubsystemBase {
 
 
     if (currentIntakeGoal != null) {
-      kIntake.setPosition(currentIntakeGoal.getGoalMeters());
+      kIntake.setPosition(currentIntakeGoal.getGoalRadians());
 
       Logger.processInputs("Intake/Inputs", kInputsIntake);
     } else {
@@ -124,7 +119,7 @@ public class Intake extends SubsystemBase {
    */
   @AutoLogOutput(key = "Intake/Feedback/PositionError")
   public double getPositionError() {
-    return currentIntakeGoal.getGoalMeters() - getPosition();
+    return currentIntakeGoal.getGoalRadians() - getPosition();
   }
 
   /**
@@ -134,7 +129,7 @@ public class Intake extends SubsystemBase {
    */
   @AutoLogOutput(key = "Intake/Feedback/FlywheelError")
   public double getFlywheelError() {
-    return currentIntakeGoal.getGoalMeters() - getPosition();
+    return currentIntakeGoal.getGoalRadians() - getPosition();
   }
 
   /**
@@ -157,6 +152,6 @@ public class Intake extends SubsystemBase {
    * @return The position of the linear mechanism in radians
    */
   public double getPosition() {
-    return kInputsIntake.position;
+    return kIntake.getPosition();
   }
 }

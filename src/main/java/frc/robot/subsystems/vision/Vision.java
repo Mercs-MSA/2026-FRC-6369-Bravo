@@ -98,7 +98,6 @@ public class Vision {
     }
 
     avgDistMeters /= numberOfTargets;
-    double xyScalar = Math.pow(avgDistMeters, 2) / numberOfTargets;
 
     // Case: single far-away tag → not reliable
     if (numberOfTargets == 1
