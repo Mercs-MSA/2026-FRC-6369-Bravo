@@ -2,6 +2,7 @@ package frc.robot.subsystems.flywheel;
 
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -75,7 +76,8 @@ public class Flywheel extends SubsystemBase {
   @AutoLogOutput(key = "Flywheel/AtSpeed")
   public boolean atSpeed() {
     double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
-    return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 0.25);  //TODO: tune, this is probably way too tight; might need to be closer to 2 during fast shooting
+    System.out.println(filteredVelocity - goalSpeedRPS);
+    return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 10);  //TODO: tune, this is probably way too tight; might need to be closer to 2 during fast shooting
   }
 
   @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")

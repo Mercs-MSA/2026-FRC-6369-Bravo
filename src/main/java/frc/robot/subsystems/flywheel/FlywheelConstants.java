@@ -5,7 +5,7 @@ import frc.robot.Constants;
 
 public class FlywheelConstants {
 
-  public static final double kMotorRotationsToFlywheelRotations = 100.0;
+  public static final double kMotorRotationsToFlywheelRotations = 1.0;
 
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
   public static final int kLinearFilterSampleCount = 5;
@@ -43,7 +43,7 @@ public class FlywheelConstants {
 
   public static final FlywheelGains kFlywheelGains =
       switch (Constants.currentMode) {
-        case REAL -> new FlywheelGains(0.4, 0.0, 0.0, 0.0, 0.0, 0.14, 0.0, 120.0, 240.0, 0);
+        case REAL -> new FlywheelGains(0.2, 0.0, 0.0, 0.0, 0.0, 0.06, 0.0, 120.0, 240.0, 0);
 
         case SIM -> new FlywheelGains(8.0, 0.0, 0.2, 0.1, 0.3, 1.0, 0.03, 180.0, 360.0, 0);
 

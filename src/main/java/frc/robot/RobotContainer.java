@@ -150,7 +150,7 @@ public class RobotContainer {
                 );
 
         spindexer = new Spindexer(
-          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kSpindexIndexGains)
         );
         
         break;
@@ -200,7 +200,7 @@ public class RobotContainer {
                 );
 
         spindexer = new Spindexer(
-          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kSpindexIndexGains)
         );
 
         break;
@@ -251,7 +251,7 @@ public class RobotContainer {
                 );
                 
         spindexer = new Spindexer(
-          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kIndexGains)
+          new SpindexerIOTalonFX(SpindexerConstants.kIndexHardware, SpindexerConstants.kMotorConfiguration, SpindexerConstants.kSpindexIndexGains)
         );
 
         break;
@@ -395,9 +395,10 @@ public class RobotContainer {
     driverController.x().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
-      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
       index.setIndexState(IndexState.STOP);
       spindexer.setIndexState(SpindexerState.STOP);
+      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
     }, intake, shooterFlywheels));
     
     // Shooting Mode

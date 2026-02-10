@@ -172,7 +172,7 @@ public class ShooterMathProvider {
             SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
-        ); 
+        ) * 6.5; 
         // Interpolate between points, hood angle
         shooterHoodAngle = triLerp(
             radVel,
