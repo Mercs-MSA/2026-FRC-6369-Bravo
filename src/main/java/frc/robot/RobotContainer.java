@@ -219,7 +219,6 @@ public class RobotContainer {
 
     // Create auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
-    buildChoreoAutos(autoChooser);
 
     // // Set up SysId routines
     // pathplannerAutoChooser.addOption(
@@ -383,11 +382,6 @@ public class RobotContainer {
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
     }, intake, shooterFlywheels));
 
-  }
-
-  // Choreo autos to be added to the auto chooser
-  public void buildChoreoAutos(LoggedDashboardChooser<Command> autoChooser) {
-    ChoreoAutonCommands autonCommands = new ChoreoAutonCommands(drive);
   }
 
   /**

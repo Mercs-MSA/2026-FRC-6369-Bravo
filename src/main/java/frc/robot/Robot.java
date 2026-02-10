@@ -22,6 +22,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.drive.Drive.Drive.DriveState;
 import frc.robot.subsystems.turret.TurretOffset;
 
 import java.io.IOException;
@@ -148,6 +149,7 @@ public class Robot extends LoggedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    robotContainer.drive.setDriveState(DriveState.AUTO);
     autonomousCommand = robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -167,6 +169,7 @@ public class Robot extends LoggedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    robotContainer.drive.setDriveState(DriveState.TELEOP);
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
