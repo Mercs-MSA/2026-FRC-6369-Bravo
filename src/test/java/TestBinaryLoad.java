@@ -20,6 +20,7 @@ class TestBinaryLoader {
     @Test
     void testReadRecord() throws IOException {
         assertEquals(3, loader.readRecord(1).length);
+        assertEquals(0, loader.headerSize % 12);
         System.out.println(Arrays.toString(loader.readRecord(1)));
     }
 }

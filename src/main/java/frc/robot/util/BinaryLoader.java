@@ -9,12 +9,20 @@ public class BinaryLoader {
     private static final int RECORD_SIZE = 12;
 
     private RandomAccessFile raf;
+    public long headerSize;
 
 
     public BinaryLoader() {
         try {
             // use 'r' mode for read-only access
             raf = new RandomAccessFile(Utils.isSimulation() ? "src/main/deploy/ShooterCalculations.bin" : "/home/lvuser/deploy/ShooterCalculations.bin", "r");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            raf.seek(0);
+            headerSize = raf.readInt() & 0xFFFFFFFFL;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -25,7 +33,7 @@ public class BinaryLoader {
      */
     public float[] readRecord(int recordIndex) throws IOException {
         // Calculate and jump to the specific record position
-        long offset = (long) recordIndex * RECORD_SIZE;
+        long offset = (long) recordIndex * RECORD_SIZE + headerSize;
         raf.seek(offset); // Jump to byte 'offset'
 
         // Read fixed-width fields sequentially
