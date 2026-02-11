@@ -24,7 +24,14 @@ public class ShooterMathProvider {
     @AutoLogOutput
     public double shooterTurretDelta;
     @AutoLogOutput
+    public double dist;
+    @AutoLogOutput
     public double runTime;
+
+    
+    // TODO: testing
+    @AutoLogOutput
+    public double closeHoodAngle;
 
     // inputs for Kalman filtering
     public static final double robotMassKg = 12.67;
@@ -132,7 +139,7 @@ public class ShooterMathProvider {
 
         // Distance to target
         Translation2d target = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? FlippingUtil.flipFieldPose(new Pose2d(targetPositionBlueSide, new Rotation2d())).getTranslation() : targetPositionBlueSide;
-        var dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
+        dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
 
         // Drivebase velocities (equal to turret velocities)
         var tanVel = velocities.vyMetersPerSecond;
@@ -142,6 +149,8 @@ public class ShooterMathProvider {
         int[] targetExtremesIndex = searchInput(dist, SimulationResults.targets);
         int[] tanVelExtremesIndex = searchInput(tanVel, SimulationResults.tanVelocities);
         int[] radVelExtremesIndex = searchInput(radVel, SimulationResults.radVelocities);
+
+        closeHoodAngle = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]))[1];
 
         // Read points for interpolation
         var calculation_q000 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]));
@@ -174,7 +183,7 @@ public class ShooterMathProvider {
             SimulationResults.targets[targetExtremesIndex[1]]
         )); 
         // Interpolate between points, hood angle
-        shooterHoodAngle = triLerp(
+        shooterHoodAngle = convertHoodPosition(triLerp(
             radVel,
             tanVel,
             dist,
@@ -192,7 +201,7 @@ public class ShooterMathProvider {
             SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
             SimulationResults.targets[targetExtremesIndex[0]],
             SimulationResults.targets[targetExtremesIndex[1]]
-        ); 
+        )); 
         // Interpolate between points, turret delta
         shooterTurretDelta = triLerp(
             radVel,
@@ -221,9 +230,16 @@ public class ShooterMathProvider {
 
     private static final double FUEL_RADIUS = 0.075; // meters
     private static final double FLYWHEEL_RADIUS = 0.051; // meters
-    private static final double FLYWHEEL_EFFICIENCY = 0.95; // percent
+    private static final double FLYWHEEL_EFFICIENCY = 1.08; // percent
 
     private double convertShooterVelocity(double simExitVelocity) {
         return simExitVelocity * (FLYWHEEL_RADIUS + FUEL_RADIUS) / (FLYWHEEL_EFFICIENCY * FLYWHEEL_RADIUS * FLYWHEEL_RADIUS * 2 * Math.PI);
+    }
+
+    private static final double HOOD_ZERO_POSITION = 0.35; // rad
+
+    private double convertHoodPosition(double input) {
+        System.out.println(input);
+        return (Math.PI / 2) - input - HOOD_ZERO_POSITION;
     }
 }

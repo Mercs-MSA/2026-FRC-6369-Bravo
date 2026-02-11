@@ -107,7 +107,7 @@ public class Pivot extends SubsystemBase {
   public void setPositionRad(double angle) {
     angle =
         MathUtil.clamp(
-            angle, PivotConstants.kMinPositionRad, PivotConstants.kMaxPositionRad);
+            angle, PivotConstants.kMinRadians, PivotConstants.kMaxRadians);
     io.setPositionMM(Units.radiansToRotations(angle));
   }
 

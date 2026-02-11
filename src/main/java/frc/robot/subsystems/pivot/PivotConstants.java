@@ -8,8 +8,9 @@ public class PivotConstants {
   public static final double kGearRatio = 37.74545; // rotations motor per rotations pivot
   public static final double kRotorOffset = 0.000488; // rotations, find in TunerX
 
-  public static final double kMaxPositionRad = 0.471;
-  public static final double kMinPositionRad = 0.0;
+  public static final double kMinRadians = 0.00;
+  public static final double kMaxRadians = 0.0515;
+
   public static final double kPositionToleranceRad = 0.005;
 
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;

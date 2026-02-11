@@ -40,6 +40,7 @@ import frc.robot.subsystems.index.Index.IndexState;
 import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.pivot.PivotConstants;
 import frc.robot.subsystems.pivot.PivotIOTalonFX;
+import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 import frc.robot.subsystems.pivot.Pivot.PivotState;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretConstants;
@@ -133,7 +134,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -183,7 +184,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -234,7 +235,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, PivotConstants.kMinRadians, PivotConstants.kMaxRadians), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -389,7 +390,9 @@ public class RobotContainer {
       shooterTurret.setTurretState(TurretGoalState.HOME);
       index.setIndexState(IndexState.STOP);
       spindexer.setIndexState(SpindexerState.STOP);
-    }, intake, shooterFlywheels));
+      shooterHood.setGoal(PivotGoal.STOW);
+      shooterHood.setPivotState(PivotState.STOW);
+    }, intake));
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
@@ -399,14 +402,19 @@ public class RobotContainer {
       index.setIndexState(IndexState.STOP);
       spindexer.setIndexState(SpindexerState.STOP);
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-    }, intake, shooterFlywheels));
+      shooterHood.setGoal(PivotGoal.STOW);
+      shooterHood.setPivotState(PivotState.STOW);
+    }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
-    }, intake, shooterFlywheels));
+      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
+      shooterHood.setGoal(PivotGoal.PROVIDED);
+      shooterHood.setPivotState(PivotState.PROVIDED);
+    }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
       if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {

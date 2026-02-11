@@ -41,7 +41,7 @@ public class PivotIOTalonFX implements PivotIO {
   private final MotionMagicVoltage positionControlMM = new MotionMagicVoltage(0);
 
   public PivotIOTalonFX(
-      PivotHardware hardware, PivotMotorConfiguration configuration, PivotGains gains) {
+      PivotHardware hardware, PivotMotorConfiguration configuration, PivotGains gains, double minRadians, double maxRadians) {
 
     motor = new TalonFX(hardware.motorID());
 
@@ -52,6 +52,12 @@ public class PivotIOTalonFX implements PivotIO {
     motorConfiguration.Slot0.kV = gains.v();
     motorConfiguration.Slot0.kA = gains.a();
     motorConfiguration.Slot0.kG = gains.g();
+
+    motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.radiansToRotations(maxRadians);
+
+    motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.radiansToRotations(minRadians);
 
     // Motion Magic values converted to rotations
     motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
@@ -121,13 +127,13 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   @Override
-  public void setPosition(double degrees) {
-    motor.setControl(positionControl.withPosition(radiansToRotations(degrees)).withSlot(0));
+  public void setPosition(double radians) {
+    motor.setControl(positionControl.withPosition(radiansToRotations(radians)).withSlot(0));
   }
 
   @Override
-  public void setPositionMM(double degrees) {
-    motor.setControl(positionControlMM.withPosition(radiansToRotations(degrees)).withSlot(0));
+  public void setPositionMM(double radians) {
+    motor.setControl(positionControlMM.withPosition(radiansToRotations(radians)).withSlot(0));
   }
 
   @Override
