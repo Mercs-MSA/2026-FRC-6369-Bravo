@@ -120,12 +120,12 @@ public class RobotContainer {
         vision =
             new Vision(
                 new CameraIO[] {
-                  new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
+                  // new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
+                  // new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
-                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
+                  // new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
-
+ 
         // Shooter
         shooterFlywheels =
                 new Flywheel(
@@ -323,19 +323,19 @@ public class RobotContainer {
             drive));
 
     driverController.pov(0).whileTrue(
-      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.4, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
 
     driverController.pov(90).whileTrue(
-      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->-0.6, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->-0.4, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
 
     driverController.pov(270).whileTrue(
-      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->0.6, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->0.0, ()->0.4, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
     
     driverController.pov(180).whileTrue(
-      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->-0.6, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
+      Commands.runEnd(() -> {drive.acceptJoystickInputs(()->-0.4, ()->0.0, ()->0.0);}, () -> {drive.acceptJoystickInputs(()->0.0, ()->0.0, ()->0.0);})
     );
 
     // prepare for climb

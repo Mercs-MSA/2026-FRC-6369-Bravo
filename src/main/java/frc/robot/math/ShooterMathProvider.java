@@ -230,16 +230,16 @@ public class ShooterMathProvider {
 
     private static final double FUEL_RADIUS = 0.075; // meters
     private static final double FLYWHEEL_RADIUS = 0.051; // meters
-    private static final double FLYWHEEL_EFFICIENCY = 1.08; // percent
+    private static final double FLYWHEEL_EFFICIENCY = 1.05; // percent
 
     private double convertShooterVelocity(double simExitVelocity) {
         return simExitVelocity * (FLYWHEEL_RADIUS + FUEL_RADIUS) / (FLYWHEEL_EFFICIENCY * FLYWHEEL_RADIUS * FLYWHEEL_RADIUS * 2 * Math.PI);
     }
 
-    private static final double HOOD_ZERO_POSITION = 0.35; // rad
+    private static final double HOOD_ZERO_POSITION = 0.32; // rad
 
     private double convertHoodPosition(double input) {
-        System.out.println(input);
+        // System.out.println(input);
         return (Math.PI / 2) - input - HOOD_ZERO_POSITION;
     }
 }
