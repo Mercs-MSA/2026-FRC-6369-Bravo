@@ -100,6 +100,9 @@ public class RobotContainer {
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
+  // Commands
+  public final TeleopCommands commands;
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
@@ -259,6 +262,7 @@ public class RobotContainer {
     }
 
     flywheelsAtGoalTrigger = new Trigger(() -> shooterFlywheels.atSpeed());
+    commands = new TeleopCommands(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
 
     // Create auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -396,24 +400,12 @@ public class RobotContainer {
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
-      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
-      index.setIndexState(IndexState.STOP);
-      spindexer.setIndexState(SpindexerState.STOP);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      commands.shootMode();
     }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.PROVIDED);
-      shooterHood.setPivotState(PivotState.PROVIDED);
+      commands.shootMode();
     }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
