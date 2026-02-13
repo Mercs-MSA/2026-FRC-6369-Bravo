@@ -54,5 +54,13 @@ public class TeleopCommands {
       shooterHood.setGoal(PivotGoal.STOW);
       shooterHood.setPivotState(PivotState.STOW);
     }
+    public void idleMode() {
+        intake.setIntakeGoal(IntakeGoal.kOut);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
+      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
+      shooterHood.setGoal(PivotGoal.PROVIDED);
+      shooterHood.setPivotState(PivotState.PROVIDED);
+    }
 
 }

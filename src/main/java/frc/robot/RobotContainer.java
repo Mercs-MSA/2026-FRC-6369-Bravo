@@ -408,6 +408,11 @@ public class RobotContainer {
       commands.shootMode();
     }, intake));
 
+    // idle mode
+    driverController.x().onTrue(Commands.runOnce(() -> {
+      commands.idleMode();
+    }, intake));
+
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
       if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {
         index.setIndexState(IndexState.PROVIDED);
