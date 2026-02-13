@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
 public class Pivot extends SubsystemBase {
 
   public enum PivotGoal {
-    STOW(() -> 0.01),
+    STOW(() -> 0.00),
     PROVIDED(() -> 0.0);
 
     private final DoubleSupplier goalDegrees;
@@ -105,10 +105,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setPositionRad(double angle) {
-    angle =
-        MathUtil.clamp(
-            angle, PivotConstants.kMinRadians, PivotConstants.kMaxRadians);
-    io.setPositionMM(Units.radiansToRotations(angle));
+    io.setPosition(angle);
   }
 
   public void setPivotGoalWithState() {
@@ -132,10 +129,10 @@ public class Pivot extends SubsystemBase {
     this.currentState = state;
   }
 
-  @AutoLogOutput(key = "Pivot/AtGoal")
-  public boolean atGoal() {
-    return Math.abs(goalAngleRad - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
-  }
+  // @AutoLogOutput(key = "Pivot/AtGoal")
+  // public boolean atGoal() {
+  //   return Math.abs(goalAngleRad - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
+  // }
 
   @AutoLogOutput(key = "Pivot/AngleDeg")
   public double getAngleDeg() {

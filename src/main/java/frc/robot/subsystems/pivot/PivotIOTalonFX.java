@@ -60,11 +60,11 @@ public class PivotIOTalonFX implements PivotIO {
     motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.radiansToRotations(minRadians);
 
     // Motion Magic values converted to rotations
-    motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
-        radiansToRotations(gains.maxVelocityDegPerSec());
-    motorConfiguration.MotionMagic.MotionMagicAcceleration =
-        radiansToRotations(gains.maxAccelerationDegPerSec2());
-    motorConfiguration.MotionMagic.MotionMagicJerk = radiansToRotations(gains.maxJerkDegPerSec3());
+    // motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
+    //     radiansToRotations(gains.maxVelocityDegPerSec());
+    // motorConfiguration.MotionMagic.MotionMagicAcceleration =
+    //     radiansToRotations(gains.maxAccelerationDegPerSec2());
+    // motorConfiguration.MotionMagic.MotionMagicJerk = radiansToRotations(gains.maxJerkDegPerSec3());
 
     motorConfiguration.CurrentLimits.SupplyCurrentLimit = configuration.supplyCurrentLimitAmps();
     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable =
@@ -127,13 +127,13 @@ public class PivotIOTalonFX implements PivotIO {
   }
 
   @Override
-  public void setPosition(double radians) {
-    motor.setControl(positionControl.withPosition(radiansToRotations(radians)).withSlot(0));
+  public void setPosition(double rots) {
+    motor.setControl(positionControl.withPosition(rots).withSlot(0));
   }
 
   @Override
   public void setPositionMM(double radians) {
-    motor.setControl(positionControlMM.withPosition(radiansToRotations(radians)).withSlot(0));
+    // motor.setControl(positionControlMM.withPosition(radiansToRotations(radians)).withSlot(0));
   }
 
   @Override
@@ -157,20 +157,16 @@ public class PivotIOTalonFX implements PivotIO {
   @Override
   public void setMotionMagicConstraints(
       double maxVelocityDegPerSec, double maxAccelerationDegPerSec2) {
-    var motionMagic = motorConfiguration.MotionMagic;
-    motionMagic.MotionMagicCruiseVelocity = radiansToRotations(maxVelocityDegPerSec);
-    motionMagic.MotionMagicAcceleration = radiansToRotations(maxAccelerationDegPerSec2);
-    motionMagic.MotionMagicJerk = 10.0 * radiansToRotations(maxAccelerationDegPerSec2);
+    // var motionMagic = motorConfiguration.MotionMagic;
+    // motionMagic.MotionMagicCruiseVelocity = radiansToRotations(maxVelocityDegPerSec);
+    // motionMagic.MotionMagicAcceleration = radiansToRotations(maxAccelerationDegPerSec2);
+    // motionMagic.MotionMagicJerk = 10.0 * radiansToRotations(maxAccelerationDegPerSec2);
 
-    motor.getConfigurator().apply(motionMagic);
+    // motor.getConfigurator().apply(motionMagic);
   }
 
   @Override
   public void setBrakeMode(boolean brake) {
     motor.setNeutralMode(brake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
-  }
-
-  private double radiansToRotations(double radians) {
-    return Units.radiansToRotations(radians);
   }
 }
