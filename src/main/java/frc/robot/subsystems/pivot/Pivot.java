@@ -38,7 +38,7 @@ public class Pivot extends SubsystemBase {
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   private PivotGoal currentGoal = null;
-  private double goalAngleRad = 0.0;
+  private double goalRotations = 0.0;
 
   private Translation2d targetPoint = new Translation2d();
 
@@ -76,12 +76,12 @@ public class Pivot extends SubsystemBase {
 
     if (currentGoal != null) {
       if (currentState != PivotState.PROVIDED) {
-        goalAngleRad = currentGoal.getGoalRadians();
+        goalRotations = currentGoal.getGoalRadians();
       } else {
-        goalAngleRad = math.shooterHoodAngle;
+        goalRotations = math.shooterHoodAngle;
       }
     }
-    io.setPosition(goalAngleRad);
+    io.setPosition(goalRotations);
 }
 
   public void setGoal(PivotGoal goal) {
@@ -94,7 +94,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setAngle(double angleDeg) {
-    goalAngleRad = angleDeg;
+    goalRotations = angleDeg;
     currentState = PivotState.PROVIDED;
     setPositionRad(angleDeg);
   }
@@ -122,7 +122,7 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDegrees")
   public double getSimGoalDeg() {
-    return goalAngleRad;
+    return goalRotations;
   }
 
   public void setPivotState(PivotState state) {
@@ -141,6 +141,6 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDeg")
   public double getGoalDeg() {
-    return goalAngleRad;
+    return goalRotations;
   }
 }
