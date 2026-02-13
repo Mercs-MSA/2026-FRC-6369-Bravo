@@ -53,5 +53,5 @@ public class SpindexerConstants {
 
   public static final SpindexerMotorConfiguration kMotorConfiguration =
       new SpindexerMotorConfiguration(
-          false, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Brake);
+          false, true, true, 80.0, 50.0, 12.0, -12.0, NeutralModeValue.Coast);
 }
