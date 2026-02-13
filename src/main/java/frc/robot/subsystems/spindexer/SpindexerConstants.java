@@ -9,7 +9,7 @@ public class SpindexerConstants {
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
   public static final int kLinearFilterSampleCount = 5;
 
-  public static final double kDefaultSpeedRPS = 15.0; // TODO: tune
+  public static final double kDefaultSpeedRPS = 10.0; // TODO: tune
 
 
   public record SpindexerHardware(

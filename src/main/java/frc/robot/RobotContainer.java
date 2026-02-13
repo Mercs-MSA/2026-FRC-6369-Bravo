@@ -120,10 +120,10 @@ public class RobotContainer {
         vision =
             new Vision(
                 new CameraIO[] {
-                  // new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
-                  // new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera0Name, () -> drive.getRotation()),
+                  new VisionIOLimelight(VisionConstants.camera1Name, () -> drive.getRotation()),
                   new VisionIOLimelight(VisionConstants.camera2Name, () -> drive.getRotation()),
-                  // new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
+                  new VisionIOLimelight(VisionConstants.camera3Name, () -> drive.getRotation())
                 });
  
         // Shooter
@@ -411,6 +411,16 @@ public class RobotContainer {
       intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
+      shooterHood.setGoal(PivotGoal.PROVIDED);
+      shooterHood.setPivotState(PivotState.PROVIDED);
+    }, intake));
+
+    driverController.y().onTrue(Commands.runOnce(() -> {
+      intake.setIntakeGoal(IntakeGoal.kOut);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
+      shooterFlywheels.setFlywheelState(FlywheelState.FIXED);
+      shooterFlywheels.setCustomSpeedRPS(50);
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
       shooterHood.setGoal(PivotGoal.PROVIDED);
       shooterHood.setPivotState(PivotState.PROVIDED);

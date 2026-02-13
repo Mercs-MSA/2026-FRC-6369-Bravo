@@ -14,6 +14,7 @@ import frc.robot.subsystems.pivot.Pivot.PivotGoal;
 public class Flywheel extends SubsystemBase {
   public enum FlywheelState {
     STOP,
+    FIXED,
     PROVIDED
   }
 
@@ -53,6 +54,7 @@ public class Flywheel extends SubsystemBase {
       goalSpeedRPS = math.shooterVelocityTarget;
     }
 
+
     if (currentState == FlywheelState.STOP) {
       goalSpeedRPS = 0.0;
     }
@@ -75,9 +77,14 @@ public class Flywheel extends SubsystemBase {
 
   @AutoLogOutput(key = "Flywheel/AtSpeed")
   public boolean atSpeed() {
-    double filteredVelocity = velocityFilter.calculate(inputs.velocityRotationsPerSec);
+    double filteredVelocity = flywheelVelocity();
     System.out.println(filteredVelocity - goalSpeedRPS);
     return atSpeedDebouncer.calculate(Math.abs(filteredVelocity - goalSpeedRPS) < 10);  //TODO: tune, this is probably way too tight; might need to be closer to 2 during fast shooting
+  }
+
+  @AutoLogOutput(key = "Flywheel/SpeedRPS")
+  public double flywheelVelocity() {
+    return velocityFilter.calculate(inputs.velocityRotationsPerSec);
   }
 
   @AutoLogOutput(key = "Flywheel/GoalSpeedRPS")

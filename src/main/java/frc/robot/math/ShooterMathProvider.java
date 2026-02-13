@@ -236,7 +236,7 @@ public class ShooterMathProvider {
         return simExitVelocity * (FLYWHEEL_RADIUS + FUEL_RADIUS) / (FLYWHEEL_EFFICIENCY * FLYWHEEL_RADIUS * FLYWHEEL_RADIUS * 2 * Math.PI);
     }
 
-    private static final double HOOD_ZERO_POSITION = 0.32; // rad
+    private static final double HOOD_ZERO_POSITION = 0.38; // rad
 
     private double convertHoodPosition(double input) {
         // System.out.println(input);
