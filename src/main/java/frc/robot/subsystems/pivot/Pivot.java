@@ -81,7 +81,7 @@ public class Pivot extends SubsystemBase {
         goalRotations = math.shooterHoodAngle;
       }
     }
-    io.setPosition(goalRotations);
+    io.setPosition(math.hoodStow ? PivotGoal.STOW.getGoalRadians() : goalRotations);
 }
 
   public void setGoal(PivotGoal goal) {

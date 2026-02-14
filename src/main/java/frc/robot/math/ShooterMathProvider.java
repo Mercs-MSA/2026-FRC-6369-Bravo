@@ -11,6 +11,7 @@ import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -25,12 +26,28 @@ public class ShooterMathProvider {
     @AutoLogOutput
     public double shooterTurretDelta;
     @AutoLogOutput
+    public boolean hoodStow;
+    @AutoLogOutput
     public double dist;
     @AutoLogOutput
     public double runTime;
     
     // position of hub opening on blue side
     public static final Translation2d targetPositionBlueSide = new Translation2d(4.625, 4.034);   // TODO: verify accuracy of position
+
+    // stow
+    public static final Rectangle2d[] stowEnablePositions = new Rectangle2d[]{
+        new Rectangle2d(new Translation2d(3.986, 8.147), new Translation2d(5.5, 6.849)), 
+        new Rectangle2d(new Translation2d(3.986, 1.282), new Translation2d(5.5, 0)),
+        new Rectangle2d(new Translation2d(16.54-3.986, 8.147), new Translation2d(16.54-5.5, 6.849)), 
+        new Rectangle2d(new Translation2d(16.54-3.986, 1.282), new Translation2d(16.54-5.5, 0))
+    };
+    public static final Rectangle2d[] stowDisablePositions = new Rectangle2d[]{
+        new Rectangle2d(new Translation2d(3.886, 8.147), new Translation2d(5.7, 6.849)), 
+        new Rectangle2d(new Translation2d(3.886, 1.282), new Translation2d(5.7, 0)),
+        new Rectangle2d(new Translation2d(16.54-3.886, 8.147), new Translation2d(16.54-5.7, 6.849)), 
+        new Rectangle2d(new Translation2d(16.54-3.886, 1.282), new Translation2d(16.54-5.7, 0))
+    };
 
     private final NavigableMap<Double, Double[]> shotMapRPS = new TreeMap<>();
 
@@ -118,14 +135,30 @@ public class ShooterMathProvider {
         shooterVelocityTarget = lerp(dist, lowerKey, upperKey, lowerVal[0], upperVal[0]);
         shooterHoodAngle = lerp(dist, lowerKey, upperKey, lowerVal[1], upperVal[1]);
 
+        boolean stowEnable = false;
+        for (Rectangle2d rect : stowEnablePositions) {
+            if (rect.contains(turretPose.getTranslation())) {
+                stowEnable = true;
+                break;
+            }
+        }
+        if (hoodStow && !stowEnable) {
+            for (Rectangle2d rect : stowDisablePositions) {
+                if (rect.contains(turretPose.getTranslation())) {
+                    stowEnable = false;
+                    break;
+                }
+            }
+        }
+
+        if (stowEnable && !hoodStow) {
+            hoodStow = true;
+        } else if (!stowEnable && hoodStow) {
+            hoodStow = false;
+        }
+
         // update runtime stat
         var tb = Utils.getCurrentTimeSeconds();
         runTime = tb-ta;
-    }
-
-    private static final double HOOD_ZERO_POSITION = 0.38; // rad
-
-    private double convertHoodPosition(double input) {
-        return input;
     }
 }
