@@ -134,7 +134,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, PivotConstants.kMinRadians, PivotConstants.kMaxRadians), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -184,7 +184,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, PivotConstants.kMinRadians, PivotConstants.kMaxRadians), shooterMath);
 
         shooterTurret =
                 new Turret(

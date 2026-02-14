@@ -41,7 +41,7 @@ public class PivotIOTalonFX implements PivotIO {
   private final MotionMagicVoltage positionControlMM = new MotionMagicVoltage(0);
 
   public PivotIOTalonFX(
-      PivotHardware hardware, PivotMotorConfiguration configuration, PivotGains gains, double minRadians, double maxRadians) {
+      PivotHardware hardware, PivotMotorConfiguration configuration, PivotGains gains, double minRotation, double maxRotation) {
 
     motor = new TalonFX(hardware.motorID());
 
@@ -54,10 +54,10 @@ public class PivotIOTalonFX implements PivotIO {
     motorConfiguration.Slot0.kG = gains.g();
 
     motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = Units.radiansToRotations(maxRadians);
+    motorConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = maxRotation;
 
     motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-    motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = Units.radiansToRotations(minRadians);
+    motorConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = minRotation;
 
     // Motion Magic values converted to rotations
     // motorConfiguration.MotionMagic.MotionMagicCruiseVelocity =
