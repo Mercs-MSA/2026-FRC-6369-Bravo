@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -67,6 +68,8 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.SpindexerConstants;
 import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
 import frc.robot.subsystems.spindexer.Spindexer.SpindexerState;
+
+import java.util.HashMap;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -266,6 +269,27 @@ public class RobotContainer {
     teleopState = new TeleopStates(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
 
     // Create auto routines
+    NamedCommands.registerCommands(new HashMap<String, Command>(){
+      {
+        put("Start", Commands.runOnce(() -> {
+          System.out.println("start");
+          shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+          shooterHood.setPivotState(PivotState.PROVIDED);
+          shooterHood.setGoal(PivotGoal.PROVIDED);
+          shooterTurret.setTurretState(TurretGoalState.PROVIDED);
+          index.setIndexState(IndexState.STOP);
+          spindexer.setIndexState(SpindexerState.STOP);
+        }, shooterFlywheels, shooterHood, shooterTurret, index, spindexer));
+        put("StartFlywheels", Commands.runOnce(() -> {
+          shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+        }, shooterFlywheels, shooterHood, shooterTurret, index, spindexer));
+        put("BeginIndex", Commands.runOnce(() -> {
+          index.setIndexState(IndexState.PROVIDED);
+          spindexer.setIndexState(SpindexerState.RUNNING);
+        }, index, spindexer));
+      }
+    });
+
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
 
     // // Set up SysId routines

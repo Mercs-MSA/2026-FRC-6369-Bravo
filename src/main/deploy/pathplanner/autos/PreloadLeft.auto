@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Start"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "StartFlywheels"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PreloadLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "BeginIndex"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
