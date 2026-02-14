@@ -30,7 +30,7 @@ public class ShooterMathProvider {
     public double runTime;
     
     // position of hub opening on blue side
-    public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);   // TODO: verify accuracy of position
+    public static final Translation2d targetPositionBlueSide = new Translation2d(4.625, 4.034);   // TODO: verify accuracy of position
 
     private final NavigableMap<Double, Double[]> shotMapRPS = new TreeMap<>();
 

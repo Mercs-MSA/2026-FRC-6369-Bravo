@@ -389,14 +389,7 @@ public class RobotContainer {
     
     // Reset everything to stowed position
     driverController.a().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kStow);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
-      shooterTurret.setTurretState(TurretGoalState.HOME);
-      index.setIndexState(IndexState.STOP);
-      spindexer.setIndexState(SpindexerState.STOP);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      teleopState.homeMode();
     }, intake));
 
     // intake mode
@@ -412,16 +405,6 @@ public class RobotContainer {
     // idle mode
     driverController.x().onTrue(Commands.runOnce(() -> {
       teleopState.idleMode();
-    }, intake));
-
-    driverController.y().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.FIXED);
-      shooterFlywheels.setCustomSpeedRPS(50);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.PROVIDED);
-      shooterHood.setPivotState(PivotState.PROVIDED);
     }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
