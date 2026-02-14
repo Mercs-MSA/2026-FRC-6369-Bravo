@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Drive;
 import frc.robot.subsystems.flywheel.Flywheel;
@@ -17,7 +19,18 @@ import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.Turret.TurretGoalState;
 import frc.robot.subsystems.intake.Intake;
 
-public class TeleopCommands {
+public class TeleopStates {
+    public enum TeleopMode {
+      IDLE,
+      SHOOT_WARMUP,
+      SHOOT_ACTIVE,
+      INTAKE,
+      HOME
+    }
+
+    @AutoLogOutput(key = "State/TeleopState")
+    public TeleopMode currentTeleopMode;
+
     public final Drive drive;
     public final Intake intake;
     public final Flywheel shooterFlywheels;
@@ -26,7 +39,7 @@ public class TeleopCommands {
     public final Spindexer spindexer;
     public final Index index;
 
-    public TeleopCommands(Drive drive, Intake intake, Flywheel shooterFlywheels, Pivot shooterHood, Turret shooterTurret, Spindexer spindexer, Index index) {
+    public TeleopStates(Drive drive, Intake intake, Flywheel shooterFlywheels, Pivot shooterHood, Turret shooterTurret, Spindexer spindexer, Index index) {
         this.drive = drive;
         this.intake = intake;
         this.shooterFlywheels = shooterFlywheels;
@@ -34,18 +47,21 @@ public class TeleopCommands {
         this.shooterTurret = shooterTurret;
         this.spindexer = spindexer;
         this.index = index;
+        this.currentTeleopMode = TeleopMode.IDLE;
     }
 
-    public void shootMode() {
-        intake.setIntakeGoal(IntakeGoal.kOut);
+    public void warmupShootMode() {
+      intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
       shooterHood.setGoal(PivotGoal.PROVIDED);
       shooterHood.setPivotState(PivotState.PROVIDED);
+      this.currentTeleopMode = TeleopMode.SHOOT_WARMUP;
     }
-    public void IntakeMode() {
-        intake.setIntakeGoal(IntakeGoal.kOut);
+
+    public void intakeMode() {
+      intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
       shooterFlywheels.setFlywheelState(FlywheelState.STOP);
       index.setIndexState(IndexState.STOP);
@@ -53,14 +69,27 @@ public class TeleopCommands {
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
       shooterHood.setGoal(PivotGoal.STOW);
       shooterHood.setPivotState(PivotState.STOW);
+      this.currentTeleopMode = TeleopMode.INTAKE;
+      
     }
+    
     public void idleMode() {
-        intake.setIntakeGoal(IntakeGoal.kOut);
+      intake.setIntakeGoal(IntakeGoal.kOut);
       intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
       shooterFlywheels.setFlywheelState(FlywheelState.STOP);
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
       shooterHood.setGoal(PivotGoal.PROVIDED);
       shooterHood.setPivotState(PivotState.PROVIDED);
+      this.currentTeleopMode = TeleopMode.IDLE;
     }
 
+    public void homeMode() {
+      intake.setIntakeGoal(IntakeGoal.kStow);
+      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
+      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+      shooterTurret.setTurretState(TurretGoalState.HOME);
+      shooterHood.setGoal(PivotGoal.STOW);
+      shooterHood.setPivotState(PivotState.STOW);
+      this.currentTeleopMode = TeleopMode.IDLE;
+    }
 }

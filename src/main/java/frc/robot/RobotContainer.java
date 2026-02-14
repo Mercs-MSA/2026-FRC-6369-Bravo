@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.TeleopStates.TeleopMode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
@@ -101,7 +102,7 @@ public class RobotContainer {
   private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Commands
-  public final TeleopCommands commands;
+  public final TeleopStates teleopState;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -262,7 +263,7 @@ public class RobotContainer {
     }
 
     flywheelsAtGoalTrigger = new Trigger(() -> shooterFlywheels.atSpeed());
-    commands = new TeleopCommands(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
+    teleopState = new TeleopStates(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
 
     // Create auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -400,23 +401,24 @@ public class RobotContainer {
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
-      commands.shootMode();
+      teleopState.intakeMode();
     }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
-      commands.shootMode();
+      teleopState.warmupShootMode();
     }, intake));
 
     // idle mode
     driverController.x().onTrue(Commands.runOnce(() -> {
-      commands.idleMode();
+      teleopState.idleMode();
     }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
-      if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {
+      if (teleopState.currentTeleopMode == TeleopMode.SHOOT_WARMUP) {
         index.setIndexState(IndexState.PROVIDED);
         spindexer.setIndexState(SpindexerState.RUNNING);
+        teleopState.currentTeleopMode = TeleopMode.SHOOT_ACTIVE;
       }
     }));
 
