@@ -418,12 +418,20 @@ public class RobotContainer {
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
-      teleopState.intakeMode();
+      if (teleopState.currentTeleopMode == TeleopMode.INTAKE) {
+        teleopState.idleMode();
+      } else {
+        teleopState.intakeMode();
+      }
     }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
-      teleopState.warmupShootMode();
+      if (teleopState.currentTeleopMode == TeleopMode.SHOOT_ACTIVE || teleopState.currentTeleopMode == TeleopMode.SHOOT_ACTIVE) {
+        teleopState.idleMode();
+      } else {
+        teleopState.warmupShootMode();
+      }
     }, intake));
 
     // idle mode

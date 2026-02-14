@@ -67,8 +67,8 @@ public class TeleopStates {
       index.setIndexState(IndexState.STOP);
       spindexer.setIndexState(SpindexerState.STOP);
       shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      shooterHood.setGoal(PivotGoal.PROVIDED);
+      shooterHood.setPivotState(PivotState.PROVIDED);
       this.currentTeleopMode = TeleopMode.INTAKE;
       
     }
