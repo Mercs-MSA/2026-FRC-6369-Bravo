@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.TeleopStates.TeleopMode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
@@ -99,6 +100,9 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
+
+  // Commands
+  public final TeleopStates teleopState;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -259,6 +263,7 @@ public class RobotContainer {
     }
 
     flywheelsAtGoalTrigger = new Trigger(() -> shooterFlywheels.atSpeed());
+    teleopState = new TeleopStates(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
 
     // Create auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
@@ -396,24 +401,17 @@ public class RobotContainer {
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
-      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
-      index.setIndexState(IndexState.STOP);
-      spindexer.setIndexState(SpindexerState.STOP);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      teleopState.intakeMode();
     }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.PROVIDED);
-      shooterHood.setPivotState(PivotState.PROVIDED);
+      teleopState.warmupShootMode();
+    }, intake));
+
+    // idle mode
+    driverController.x().onTrue(Commands.runOnce(() -> {
+      teleopState.idleMode();
     }, intake));
 
     driverController.y().onTrue(Commands.runOnce(() -> {
@@ -427,9 +425,10 @@ public class RobotContainer {
     }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
-      if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {
+      if (teleopState.currentTeleopMode == TeleopMode.SHOOT_WARMUP) {
         index.setIndexState(IndexState.PROVIDED);
         spindexer.setIndexState(SpindexerState.RUNNING);
+        teleopState.currentTeleopMode = TeleopMode.SHOOT_ACTIVE;
       }
     }));
 
