@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Start"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "StartToNeutralLeft"
@@ -17,9 +23,21 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "StartFlywheels"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "NeutralLeftPickupEnd"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "BeginIndex"
           }
         }
       ]
