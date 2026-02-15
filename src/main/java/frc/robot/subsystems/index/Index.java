@@ -48,7 +48,7 @@ public class Index extends SubsystemBase {
     }
 
     if (currentState == IndexState.PROVIDED) {
-      goalSpeedRPS = math.shooterVelocityTarget * IndexConstants.kSpeedRatio;
+      goalSpeedRPS = IndexConstants.kSpeed;
     }
 
     if (currentState == IndexState.STOP) {

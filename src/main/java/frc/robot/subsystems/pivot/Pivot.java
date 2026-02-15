@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
 public class Pivot extends SubsystemBase {
 
   public enum PivotGoal {
-    STOW(() -> 0.01),
+    STOW(() -> 0.00),
     PROVIDED(() -> 0.0);
 
     private final DoubleSupplier goalDegrees;
@@ -38,7 +38,7 @@ public class Pivot extends SubsystemBase {
   private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
   private PivotGoal currentGoal = null;
-  private double goalAngleRad = 0.0;
+  private double goalRotations = 0.0;
 
   private Translation2d targetPoint = new Translation2d();
 
@@ -76,12 +76,12 @@ public class Pivot extends SubsystemBase {
 
     if (currentGoal != null) {
       if (currentState != PivotState.PROVIDED) {
-        goalAngleRad = currentGoal.getGoalRadians();
+        goalRotations = currentGoal.getGoalRadians();
       } else {
-        goalAngleRad = math.shooterHoodAngle;
+        goalRotations = math.shooterHoodAngle;
       }
     }
-    io.setPosition(goalAngleRad);
+    io.setPosition(math.hoodStow ? PivotGoal.STOW.getGoalRadians() : goalRotations);
 }
 
   public void setGoal(PivotGoal goal) {
@@ -94,7 +94,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setAngle(double angleDeg) {
-    goalAngleRad = angleDeg;
+    goalRotations = angleDeg;
     currentState = PivotState.PROVIDED;
     setPositionRad(angleDeg);
   }
@@ -105,10 +105,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setPositionRad(double angle) {
-    angle =
-        MathUtil.clamp(
-            angle, PivotConstants.kMinRadians, PivotConstants.kMaxRadians);
-    io.setPositionMM(Units.radiansToRotations(angle));
+    io.setPosition(angle);
   }
 
   public void setPivotGoalWithState() {
@@ -125,17 +122,17 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDegrees")
   public double getSimGoalDeg() {
-    return goalAngleRad;
+    return goalRotations;
   }
 
   public void setPivotState(PivotState state) {
     this.currentState = state;
   }
 
-  @AutoLogOutput(key = "Pivot/AtGoal")
-  public boolean atGoal() {
-    return Math.abs(goalAngleRad - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
-  }
+  // @AutoLogOutput(key = "Pivot/AtGoal")
+  // public boolean atGoal() {
+  //   return Math.abs(goalAngleRad - getAngleDeg()) < PivotConstants.kPositionToleranceRad;
+  // }
 
   @AutoLogOutput(key = "Pivot/AngleDeg")
   public double getAngleDeg() {
@@ -144,6 +141,6 @@ public class Pivot extends SubsystemBase {
 
   @AutoLogOutput(key = "Pivot/GoalDeg")
   public double getGoalDeg() {
-    return goalAngleRad;
+    return goalRotations;
   }
 }

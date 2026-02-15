@@ -10,7 +10,7 @@ public class IndexConstants {
   public static final double kStatusSignalUpdateFrequencyHz = 100.0;
   public static final int kLinearFilterSampleCount = 5;
 
-  public static final double kSpeedRatio = 0.3; // TODO: tune
+  public static final double kSpeed = 35; // TODO: tune
   public static final double kIndexVelocityLimitRPS = 50.0; // TODO: tune
 
   public record IndexHardware(

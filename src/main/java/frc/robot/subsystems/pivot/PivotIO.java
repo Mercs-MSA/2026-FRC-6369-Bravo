@@ -15,7 +15,7 @@ public interface PivotIO {
 
   public void updateInputs(PivotIOInputs inputs);
 
-  public void setPosition(double positionDegrees);
+  public void setPosition(double rotations);
 
   public void setPositionMM(double positionDegrees);
 
