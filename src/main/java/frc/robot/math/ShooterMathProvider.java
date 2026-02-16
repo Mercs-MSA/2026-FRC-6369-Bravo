@@ -109,10 +109,6 @@ public class ShooterMathProvider {
         Translation2d target = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? FlippingUtil.flipFieldPose(new Pose2d(targetPositionBlueSide, new Rotation2d())).getTranslation() : targetPositionBlueSide;
         dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
 
-        // Drivebase velocities (equal to turret velocities)
-        // var tanVel = velocities.vyMetersPerSecond;
-        // var radVel = velocities.vxMetersPerSecond;
-
         // Search for upper/lower bound indices
         
 
