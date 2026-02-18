@@ -2,6 +2,8 @@ package frc.robot.math;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
@@ -9,12 +11,12 @@ import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.util.BinaryLoader;
 
 public class ShooterMathProvider {
     @AutoLogOutput
@@ -24,28 +26,37 @@ public class ShooterMathProvider {
     @AutoLogOutput
     public double shooterTurretDelta;
     @AutoLogOutput
+    public boolean hoodStow;
+    @AutoLogOutput
     public double dist;
     @AutoLogOutput
     public double runTime;
-
     
-    // TODO: testing
-    @AutoLogOutput
-    public double closeHoodAngle;
-
-    // inputs for Kalman filtering
-    public static final double robotMassKg = 12.67;
-    public static final double robotMOI = 2.000; // moment of inertia
-
     // position of hub opening on blue side
-    public static final Translation2d targetPositionBlueSide = new Translation2d(4.640, 4.070);   // TODO: verify accuracy of position
+    public static final Translation2d targetPositionBlueSide = new Translation2d(4.625, 4.034);   // TODO: verify accuracy of position
 
-    // indexing info returned from simulation generator.py
-    // https://github.com/Mercs-MSA/2026-FRC-6369-ShooterSimulation
-    public static final SimulationResults sim = new SimulationResults();
+    // stow
+    public static final Rectangle2d[] stowEnablePositions = new Rectangle2d[]{
+        new Rectangle2d(new Translation2d(3.986, 8.147), new Translation2d(5.5, 6.849)), 
+        new Rectangle2d(new Translation2d(3.986, 1.282), new Translation2d(5.5, 0)),
+        new Rectangle2d(new Translation2d(16.54-3.986, 8.147), new Translation2d(16.54-5.5, 6.849)), 
+        new Rectangle2d(new Translation2d(16.54-3.986, 1.282), new Translation2d(16.54-5.5, 0))
+    };
+    public static final Rectangle2d[] stowDisablePositions = new Rectangle2d[]{
+        new Rectangle2d(new Translation2d(3.886, 8.147), new Translation2d(5.7, 6.849)), 
+        new Rectangle2d(new Translation2d(3.886, 1.282), new Translation2d(5.7, 0)),
+        new Rectangle2d(new Translation2d(16.54-3.886, 8.147), new Translation2d(16.54-5.7, 6.849)), 
+        new Rectangle2d(new Translation2d(16.54-3.886, 1.282), new Translation2d(16.54-5.7, 0))
+    };
 
-    // loader for bulk binary data produced by simulation
-    public static final BinaryLoader loader = new BinaryLoader();
+    private final NavigableMap<Double, Double[]> shotMapRPS = new TreeMap<>();
+
+    public ShooterMathProvider() {
+        shotMapRPS.put(1.83, new Double[]{50.0, 0.00});
+        shotMapRPS.put(3.09, new Double[]{50.0, 0.95});
+        shotMapRPS.put(3.64, new Double[]{50.0, 1.45});
+        shotMapRPS.put(5.32, new Double[]{59.0, 1.65});
+    }
 
     /**
      * Upper/lower bound search for a value in an array
@@ -53,7 +64,7 @@ public class ShooterMathProvider {
      * @param a Array to search
      * @return Two index positions. First is the upper bound index, second the lower bound index. May return two identical values if the exact input is in the array.
      */
-    private static int[] searchInput(double value, double[] a) {
+    public static int[] searchInput(double value, double[] a) {
         // Modified from https://stackoverflow.com/a/30245398
         // Posted by David Soroko, modified by community. See post 'Timeline' for change history
         // Retrieved 2026-01-22, License - CC BY-SA 4.0
@@ -66,17 +77,6 @@ public class ShooterMathProvider {
 
         int insertionPoint = -result - 1; // get the insertion point
         return new int[]{insertionPoint, insertionPoint - 1}; // upper/lower
-    }
-
-    /**
-     * Get the flat index of results in the simulation records.
-     * @param radVel Index of the radial velocity. Must be a valid index in SimulationResults
-     * @param tanVel Index of the tangential velocity. Must be a valid index in SimulationResults
-     * @param target Index of the target distance. Must be a valid index in SimulationResults
-     * @return Position in the flat array. 
-     */
-    private int getCalcIndex(int radVel, int tanVel, int target) {
-        return radVel * 1 + tanVel * SimulationResults.iterations + target * (SimulationResults.iterations * SimulationResults.iterations);
     }
 
     /**
@@ -101,38 +101,6 @@ public class ShooterMathProvider {
         return ((x2 - x) / (x2 - x1)) * q00 + ((x - x1) / (x2 - x1)) * q01;
     }
 
-    /**
-     * Trilinear interpolation
-     * @param x Input x value
-     * @param y Input y value
-     * @param z Input z value
-     * @param q000 Value at (x1, y1, z1)
-     * @param q001 Value at (x1, y1, z2)
-     * @param q010 Value at (x1, y2, z1)
-     * @param q011 Value at (x1, y2, z2)
-     * @param q100 Value at (x2, y1, z1)
-     * @param q101 Value at (x2, y1, z2)
-     * @param q110 Value at (x2, y2, z1)
-     * @param q111 Value at (x2, y2, z2)
-     * @param x1 Lower bound of x
-     * @param x2 Upper bound of x
-     * @param y1 Lower bound of y
-     * @param y2 Upper bound of y
-     * @param z1 Lower bound of z
-     * @param z2 Upper bound of z
-     * @return Interpolated value at (x, y, z)
-     */
-    private static double triLerp(double x, double y, double z, float q000, float q001, float q010, float q011, float q100, float q101, float q110, float q111, double x1, double x2, double y1, double y2, double z1, double z2) {
-        double x00 = lerp(x, x1, x2, q000, q100);
-        double x10 = lerp(x, x1, x2, q010, q110);
-        double x01 = lerp(x, x1, x2, q001, q101);
-        double x11 = lerp(x, x1, x2, q011, q111);
-        double r0 = lerp(y, y1, y2, x00, x01);
-        double r1 = lerp(y, y1, y2, x10, x11);
-
-        return lerp(z, z1, z2, r0, r1);
-    }
-
     public void update(ChassisSpeeds velocities, Pose2d turretPose) throws IOException {
         // start runtime stat
         var ta = Utils.getCurrentTimeSeconds();
@@ -141,105 +109,52 @@ public class ShooterMathProvider {
         Translation2d target = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red ? FlippingUtil.flipFieldPose(new Pose2d(targetPositionBlueSide, new Rotation2d())).getTranslation() : targetPositionBlueSide;
         dist = Math.sqrt(Math.pow(turretPose.getX() - target.getX(), 2) + Math.pow(turretPose.getY() - target.getY(), 2));
 
-        // Drivebase velocities (equal to turret velocities)
-        var tanVel = velocities.vyMetersPerSecond;
-        var radVel = velocities.vxMetersPerSecond;
-
         // Search for upper/lower bound indices
-        int[] targetExtremesIndex = searchInput(dist, SimulationResults.targets);
-        int[] tanVelExtremesIndex = searchInput(tanVel, SimulationResults.tanVelocities);
-        int[] radVelExtremesIndex = searchInput(radVel, SimulationResults.radVelocities);
+        
 
-        closeHoodAngle = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]))[1];
+        shooterTurretDelta = 0.0;
+        // Safely get lower/upper map entries with fallbacks to first/last entries when out-of-range
+        var lowerEntry = shotMapRPS.floorEntry(dist);
+        if (lowerEntry == null) {
+            lowerEntry = shotMapRPS.firstEntry();
+        }
+        var upperEntry = shotMapRPS.ceilingEntry(dist);
+        if (upperEntry == null) {
+            upperEntry = shotMapRPS.lastEntry();
+        }
 
-        // Read points for interpolation
-        var calculation_q000 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[0]));
-        var calculation_q001 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[0], targetExtremesIndex[1]));
-        var calculation_q010 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[0]));
-        var calculation_q011 = loader.readRecord(getCalcIndex(radVelExtremesIndex[0], tanVelExtremesIndex[1], targetExtremesIndex[1]));
-        var calculation_q100 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[0]));
-        var calculation_q101 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[0], targetExtremesIndex[1]));
-        var calculation_q110 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[0]));
-        var calculation_q111 = loader.readRecord(getCalcIndex(radVelExtremesIndex[1], tanVelExtremesIndex[1], targetExtremesIndex[1]));
+        double lowerKey = lowerEntry.getKey();
+        double upperKey = upperEntry.getKey();
+        Double[] lowerVal = lowerEntry.getValue();
+        Double[] upperVal = upperEntry.getValue();
 
-        // Interpolate between points, velocity
-        shooterVelocityTarget = convertShooterVelocity(triLerp(
-            radVel,
-            tanVel,
-            dist,
-            calculation_q000[0],
-            calculation_q001[0],
-            calculation_q010[0],
-            calculation_q011[0],
-            calculation_q100[0],
-            calculation_q101[0],
-            calculation_q110[0],
-            calculation_q111[0],
-            SimulationResults.radVelocities[radVelExtremesIndex[0]],
-            SimulationResults.radVelocities[radVelExtremesIndex[1]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[0]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
-            SimulationResults.targets[targetExtremesIndex[0]],
-            SimulationResults.targets[targetExtremesIndex[1]]
-        )); 
-        // Interpolate between points, hood angle
-        shooterHoodAngle = convertHoodPosition(triLerp(
-            radVel,
-            tanVel,
-            dist,
-            calculation_q000[1],
-            calculation_q001[1],
-            calculation_q010[1],
-            calculation_q011[1],
-            calculation_q100[1],
-            calculation_q101[1],
-            calculation_q110[1],
-            calculation_q111[1],
-            SimulationResults.radVelocities[radVelExtremesIndex[0]],
-            SimulationResults.radVelocities[radVelExtremesIndex[1]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[0]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
-            SimulationResults.targets[targetExtremesIndex[0]],
-            SimulationResults.targets[targetExtremesIndex[1]]
-        )); 
-        // Interpolate between points, turret delta
-        shooterTurretDelta = triLerp(
-            radVel,
-            tanVel,
-            dist,
-            calculation_q000[2],
-            calculation_q001[2],
-            calculation_q010[2],
-            calculation_q011[2],
-            calculation_q100[2],
-            calculation_q101[2],
-            calculation_q110[2],
-            calculation_q111[2],
-            SimulationResults.radVelocities[radVelExtremesIndex[0]],
-            SimulationResults.radVelocities[radVelExtremesIndex[1]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[0]],
-            SimulationResults.tanVelocities[tanVelExtremesIndex[1]],
-            SimulationResults.targets[targetExtremesIndex[0]],
-            SimulationResults.targets[targetExtremesIndex[1]]
-        ); 
+        shooterVelocityTarget = lerp(dist, lowerKey, upperKey, lowerVal[0], upperVal[0]);
+        shooterHoodAngle = lerp(dist, lowerKey, upperKey, lowerVal[1], upperVal[1]);
+
+        boolean stowEnable = false;
+        for (Rectangle2d rect : stowEnablePositions) {
+            if (rect.contains(turretPose.getTranslation())) {
+                stowEnable = true;
+                break;
+            }
+        }
+        if (hoodStow && !stowEnable) {
+            for (Rectangle2d rect : stowDisablePositions) {
+                if (rect.contains(turretPose.getTranslation())) {
+                    stowEnable = false;
+                    break;
+                }
+            }
+        }
+
+        if (stowEnable && !hoodStow) {
+            hoodStow = true;
+        } else if (!stowEnable && hoodStow) {
+            hoodStow = false;
+        }
 
         // update runtime stat
         var tb = Utils.getCurrentTimeSeconds();
         runTime = tb-ta;
-    }
-
-    private static final double FUEL_RADIUS = 0.075; // meters
-    private static final double FLYWHEEL_RADIUS = 0.051; // meters
-    private static final double FLYWHEEL_EFFICIENCY = 1.05; // percent
-
-    private double convertShooterVelocity(double simExitVelocity) {
-        return simExitVelocity * (FLYWHEEL_RADIUS + FUEL_RADIUS) / (FLYWHEEL_EFFICIENCY * FLYWHEEL_RADIUS * FLYWHEEL_RADIUS * 2 * Math.PI);
-    }
-
-    private static final double HOOD_ZERO_POSITION = 0.38; // rad
-
-    private double convertHoodPosition(double input) {
-        // System.out.println(input);
-        return (Math.PI / 2) - input - HOOD_ZERO_POSITION;
     }
 }

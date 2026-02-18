@@ -11,24 +11,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "StartToNeutralLeft"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NeutralLeftPickup"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 10.0
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "StartFlywheels"
@@ -37,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "NeutralLeftPickupEnd"
+            "pathName": "PreloadLeft"
           }
         },
         {

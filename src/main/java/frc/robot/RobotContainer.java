@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.TeleopStates.TeleopMode;
 import frc.robot.generated.TunerConstants;
 import frc.robot.math.ShooterMathProvider;
 import frc.robot.subsystems.drive.Drive.Controllers.HolonomicController;
@@ -67,6 +69,8 @@ import frc.robot.subsystems.spindexer.SpindexerConstants;
 import frc.robot.subsystems.spindexer.SpindexerIOTalonFX;
 import frc.robot.subsystems.spindexer.Spindexer.SpindexerState;
 
+import java.util.HashMap;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -99,6 +103,9 @@ public class RobotContainer {
   // Controller
   private final CommandXboxController driverController = new CommandXboxController(0);
   private final CommandXboxController operatorController = new CommandXboxController(1);
+
+  // Commands
+  public final TeleopStates teleopState;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -134,7 +141,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, PivotConstants.kMinRadians, PivotConstants.kMaxRadians), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -184,7 +191,7 @@ public class RobotContainer {
 
         shooterHood = 
                 new Pivot(
-                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, TurretConstants.kMinRadiansLimit, TurretConstants.kMaxRadiansLimit), shooterMath);
+                  new PivotIOTalonFX(PivotConstants.kPivotHardware, PivotConstants.kMotorConfiguration, PivotConstants.kPivotGains, PivotConstants.kMinRadians, PivotConstants.kMaxRadians), shooterMath);
 
         shooterTurret =
                 new Turret(
@@ -259,8 +266,30 @@ public class RobotContainer {
     }
 
     flywheelsAtGoalTrigger = new Trigger(() -> shooterFlywheels.atSpeed());
+    teleopState = new TeleopStates(drive, intake, shooterFlywheels, shooterHood, shooterTurret, spindexer, index);
 
     // Create auto routines
+    NamedCommands.registerCommands(new HashMap<String, Command>(){
+      {
+        put("Start", Commands.runOnce(() -> {
+          System.out.println("start");
+          shooterFlywheels.setFlywheelState(FlywheelState.STOP);
+          shooterHood.setPivotState(PivotState.PROVIDED);
+          shooterHood.setGoal(PivotGoal.PROVIDED);
+          shooterTurret.setTurretState(TurretGoalState.PROVIDED);
+          index.setIndexState(IndexState.STOP);
+          spindexer.setIndexState(SpindexerState.STOP);
+        }, shooterFlywheels, shooterHood, shooterTurret, index, spindexer));
+        put("StartFlywheels", Commands.runOnce(() -> {
+          shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
+        }, shooterFlywheels, shooterHood, shooterTurret, index, spindexer));
+        put("BeginIndex", Commands.runOnce(() -> {
+          index.setIndexState(IndexState.PROVIDED);
+          spindexer.setIndexState(SpindexerState.RUNNING);
+        }, index, spindexer));
+      }
+    });
+
     autoChooser = new LoggedDashboardChooser<>("Auto Chooser", AutoBuilder.buildAutoChooser());
 
     // // Set up SysId routines
@@ -384,52 +413,37 @@ public class RobotContainer {
     
     // Reset everything to stowed position
     driverController.a().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kStow);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
-      shooterTurret.setTurretState(TurretGoalState.HOME);
-      index.setIndexState(IndexState.STOP);
-      spindexer.setIndexState(SpindexerState.STOP);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      teleopState.homeMode();
     }, intake));
 
     // intake mode
     driverController.leftBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kRunning);
-      shooterFlywheels.setFlywheelState(FlywheelState.STOP);
-      index.setIndexState(IndexState.STOP);
-      spindexer.setIndexState(SpindexerState.STOP);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.STOW);
-      shooterHood.setPivotState(PivotState.STOW);
+      if (teleopState.currentTeleopMode == TeleopMode.INTAKE) {
+        teleopState.idleMode();
+      } else {
+        teleopState.intakeMode();
+      }
     }, intake));
     
     // Shooting Mode
     driverController.rightBumper().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.PROVIDED);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.PROVIDED);
-      shooterHood.setPivotState(PivotState.PROVIDED);
+      if (teleopState.currentTeleopMode == TeleopMode.SHOOT_ACTIVE || teleopState.currentTeleopMode == TeleopMode.SHOOT_ACTIVE) {
+        teleopState.idleMode();
+      } else {
+        teleopState.warmupShootMode();
+      }
     }, intake));
 
-    driverController.y().onTrue(Commands.runOnce(() -> {
-      intake.setIntakeGoal(IntakeGoal.kOut);
-      intake.setFlywheelGoal(IntakeFlywheelGoal.kStop);
-      shooterFlywheels.setFlywheelState(FlywheelState.FIXED);
-      shooterFlywheels.setCustomSpeedRPS(50);
-      shooterTurret.setTurretState(TurretGoalState.PROVIDED);
-      shooterHood.setGoal(PivotGoal.PROVIDED);
-      shooterHood.setPivotState(PivotState.PROVIDED);
+    // idle mode
+    driverController.x().onTrue(Commands.runOnce(() -> {
+      teleopState.idleMode();
     }, intake));
 
     flywheelsAtGoalTrigger.onTrue(Commands.runOnce(() -> {
-      if (shooterFlywheels.currentState == FlywheelState.PROVIDED) {
+      if (teleopState.currentTeleopMode == TeleopMode.SHOOT_WARMUP) {
         index.setIndexState(IndexState.PROVIDED);
         spindexer.setIndexState(SpindexerState.RUNNING);
+        teleopState.currentTeleopMode = TeleopMode.SHOOT_ACTIVE;
       }
     }));
 
