@@ -99,7 +99,7 @@ public class Turret extends SubsystemBase {
       goalRotationOffsetRadians = 0.0;
     }
 
-    io.setPosition(getTargettingAngle());
+    io.setPosition(getTargettingAngle()+goalRotationOffsetRadians);
   }
 
   private double getTargettingAngle() {

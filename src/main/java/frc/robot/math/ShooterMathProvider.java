@@ -116,7 +116,6 @@ public class ShooterMathProvider {
         // Search for upper/lower bound indices
         
 
-        shooterTurretDelta = 0.0;
         // Safely get lower/upper map entries with fallbacks to first/last entries when out-of-range
         var lowerEntry = shotMapRPS.floorEntry(dist);
         if (lowerEntry == null) {
@@ -134,6 +133,7 @@ public class ShooterMathProvider {
 
         shooterVelocityTarget = lerp(dist, lowerKey, upperKey, lowerVal[0], upperVal[0]);
         shooterHoodAngle = lerp(dist, lowerKey, upperKey, lowerVal[1], upperVal[1]);
+        shooterTurretDelta = compensateAzimuth(50.0, dist, shooterHoodAngle, velocities.vyMetersPerSecond); // TODO: tune muzzle velocity and launch pitch
 
         boolean stowEnable = false;
         for (Rectangle2d rect : stowEnablePositions) {
@@ -161,4 +161,71 @@ public class ShooterMathProvider {
         var tb = Utils.getCurrentTimeSeconds();
         runTime = tb-ta;
     }
-}
+    public double compensateAzimuth(double muzzle_velocity, double target_distance, double launch_pitch, double platform_velocity)
+    {
+        double muzzleVelocity=muzzle_velocity; // Muzzle velocity (m/s)
+        double theta_deg=launch_pitch; // Launch pitch (degrees)
+        double v_p=platform_velocity; // Platform velocity (m/s) along the Y-axis
+        double h_target=2.0; // Target height (m)
+        double g=9.81; // Gravitational acceleration (m/s^2)
+
+        double theta=Math.toRadians(theta_deg);
+        double v_z0 = muzzleVelocity * Math.sin(theta);
+        double v_h_rel = muzzleVelocity * Math.cos(theta);
+
+        double t_impact = (v_z0 + Math.sqrt(v_z0 * v_z0 - 2 * g * h_target)) / g;
+        // double[] t= linspace(0, t_impact, 100);
+        double phi= Math.asin(v_p/v_h_rel);
+        return -phi;
+
+
+
+
+    }
+//     public static double[] linspace(double start, double stop, int n) {
+//         double[] arr = new double[n];
+//         if (n == 1) {
+//             arr[0] = stop;
+//             return arr;
+//         }
+//         double step = (stop - start) / (n - 1);
+//         for (int i = 0; i < n; i++) {
+//         arr[i] = start + step * i;
+//         }
+//         return arr;
+// }
+//     //     def simulate_3d_projectile():
+    // # --- Parameters ---
+    // v_b = 10.0        # Muzzle velocity (m/s)
+    // theta_deg = 55.0  # Launch pitch (degrees)
+    // v_p = 1.5         # Platform velocity (m/s) along the Y-axis
+    // h_target = 2.0    # Target height (m)
+    // g = 9.81          
+    
+    // theta = np.deg2rad(theta_deg)
+    // v_z0 = v_b * np.sin(theta)
+    // v_h_rel = v_b * np.cos(theta)
+    
+    // # 1. Time of Flight to reach height h_target
+    // # Solving: -0.5*g*t^2 + v_z0*t - h_target = 0
+    // t_impact = (v_z0 + np.sqrt(v_z0**2 - 2*g*h_target)) / g
+    // t = np.linspace(0, t_impact, 100)
+    
+    // # 2. Calculate Azimuth (Lead Angle)
+    // # We must aim 'backwards' against the platform velocity v_p
+    // phi = np.arcsin(v_p / v_h_rel)
+    
+    // # --- Scenario 1: Uncompensated ---
+    // # Aiming directly down X-axis (phi = 0)
+    // x_un = (v_h_rel * np.cos(0)) * t
+    // y_un = (v_p + v_h_rel * np.sin(0)) * t
+    // z_un = v_z0 * t - 0.5 * g * t**2
+    
+    // # --- Scenario 2: Compensated ---
+    // # Aiming at angle -phi to cancel v_p
+    // x_co = (v_h_rel * np.cos(phi)) * t
+    // y_co = (v_p - v_h_rel * np.sin(phi)) * t  # This results in 0
+    // z_co = v_z0 * t - 0.5 * g * t**2
+    
+    }
+
